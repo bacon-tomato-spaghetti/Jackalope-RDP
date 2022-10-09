@@ -11,12 +11,10 @@ server_socket.bind((HOST, PORT))
 server_socket.listen()
 print('[+] listening...')
 
-
 client_socket, client_addr = server_socket.accept()
 print(f'[+] Client addr: {client_addr}')
 
 while True:
-    client_socket.settimeout(1)
     data = client_socket.recv(SIZE)
     dataSize = len(data)
     print(f'[+] {dataSize}bytes received')
