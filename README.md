@@ -31,7 +31,7 @@ cmake -G "Visual Studio 17 2022" -A x64 ..
 cmake --build . --config Debug
 ```
 
-After `-G`, write your own cmake generator. To check this, Do `cmake -h`.
+After `-G`, write your own cmake generator. To check this, do `cmake -h`.
 
 Use `Release` instead of `Debug` to remove debugging symbols.
 
@@ -51,8 +51,6 @@ For example,
 fuzzer.exe -in in -out out -rdpconf rdp.conf -channel RDPSND -nthreads 2 -instrument_module mstscax.dll -target_module mstscax.dll -clean_target_on_coverage false -persist -target_offset 0x484800 -iterations 10000 -cmp_coverage -dump_coverage -- mstsc /w:1000 /h:800
 ```
 
-`0x484800` is offset of `CRdpAudioPlaybackSVCPlugin::OpenEventFn()`.
-
 `rdp.conf` is like
 
 ```
@@ -60,7 +58,7 @@ fuzzer.exe -in in -out out -rdpconf rdp.conf -channel RDPSND -nthreads 2 -instru
 192.168.174.134:12345
 ```
 
-If you want to run fuzzer for other RDP services, edit command line after `--`. And also, you should edit `RDPFuzzer::CreateRDPThreadContext()`. This function adds `/v:<server ip address>` to command line.
+If you want to run fuzzer for other RDP services, edit command line after `--`. And also, you should edit `RDPFuzzer::CreateRDPThreadContext()`, which adds `/v:<server ip address>` to command line.
 
 ## OutputFilter
 
