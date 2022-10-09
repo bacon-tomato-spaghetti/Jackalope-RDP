@@ -2,7 +2,7 @@
 
 ## Introduction
 
-We customized Jackalope for RDP client fuzzing.
+We customized Jackalope developed by Google Project Zero for RDP client fuzzing.
 
 Original repository: https://github.com/googleprojectzero/Jackalope
 
@@ -59,3 +59,5 @@ fuzzer.exe -in in -out out -rdpconf rdp.conf -nthreads 2 -instrument_module msts
 192.168.174.133:12345
 192.168.174.134:12345
 ```
+
+If you want to run fuzzer for other RDP services, edit command line after `--`. And also, you should edit `RDPFuzzer::CreateRDPThreadContext()`. This function adds `/v:<server ip address>` to command line.
