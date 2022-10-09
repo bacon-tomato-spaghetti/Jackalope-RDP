@@ -218,11 +218,10 @@ int main(int argc, char **argv)
     grammar = GetOption("-grammar", argc, argv);
 
     // modification for RDP fuzzing
-    const char *rdphost = GetOption("-rdphost", argc, argv);
-    u_short rdpport = (u_short)GetIntOption("-rdpport", argc, argv, 0);
-    if (rdphost && rdpport)
+    const char *rdpconf = GetOption("-rdpconf", argc, argv);
+    if (rdpconf)
     {
-        RDPFuzzer *fuzzer = new RDPFuzzer(rdphost, rdpport);
+        RDPFuzzer *fuzzer = new RDPFuzzer(rdpconf);
         fuzzer->Run(argc, argv);
     }
 

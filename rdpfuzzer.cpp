@@ -1,6 +1,46 @@
 #include "rdpfuzzer.h"
 #include "common.h"
 #include "mutator.h"
+#include "server.h"
+#include "directory.h"
+#include "thread.h"
+
+RDPFuzzer::RDPFuzzer(const char *rdpconf)
+{
+    this->rdpconf = rdpconf;
+}
+
+RDPFuzzer::RDPThreadContext *RDPFuzzer::CreateRDPThreadContext(int argc, char **argv, int thread_id, const char *host, u_short port)
+{
+    RDPThreadContext *tc = new RDPThreadContext();
+
+    tc->host = host;
+    tc->port = port;
+
+    tc->target_argc = target_argc + 1;
+    tc->target_argv = (char **)calloc(tc->target_argc + 1, sizeof(char *));
+    for (int i = 0; i < tc->target_argc - 1; i++)
+    {
+        tc->target_argv[i] = target_argv[i];
+    }
+    tc->target_argv[tc->target_argc - 1] = (char *)calloc(0x20, sizeof(char));
+    tc->target_argv[tc->target_argc - 1][0] = '/';
+    tc->target_argv[tc->target_argc - 1][1] = 'v';
+    tc->target_argv[tc->target_argc - 1][2] = ':';
+    strcpy(&tc->target_argv[tc->target_argc - 1][3], tc->host);
+
+    tc->thread_id = thread_id;
+    tc->fuzzer = this;
+    tc->prng = CreatePRNG(argc, argv, tc);
+    tc->mutator = CreateMutator(argc, argv, tc);
+    tc->instrumentation = CreateInstrumentation(argc, argv, tc);
+    tc->sampleDelivery = CreateSampleDelivery(argc, argv, tc);
+    tc->minimizer = CreateMinimizer(argc, argv, tc);
+    tc->range_tracker = CreateRangeTracker(argc, argv, tc);
+    tc->coverage_initialized = false;
+
+    return tc;
+}
 
 // Same with BinaryFuzzer::CreateMutator() in main.cpp
 Mutator *RDPFuzzer::CreateMutator(int argc, char **argv, ThreadContext *tc)
@@ -101,13 +141,118 @@ Mutator *RDPFuzzer::CreateMutator(int argc, char **argv, ThreadContext *tc)
     }
 }
 
-RDPFuzzer::RDPFuzzer(const char *host, u_short port)
+SocketSampleDelivery *RDPFuzzer::CreateSampleDelivery(int argc, char **argv, RDPThreadContext *tc)
 {
-    this->host = host;
-    this->port = port;
+    return new SocketSampleDelivery(tc->host, tc->port);
 }
 
-SocketSampleDelivery *RDPFuzzer::CreateSampleDelivery(int argc, char **argv, ThreadContext *tc)
+void *StartRDPFuzzThread(void *arg)
 {
-    return new SocketSampleDelivery(this->host, this->port);
+    RDPFuzzer::RDPThreadContext *tc = (RDPFuzzer::RDPThreadContext *)arg;
+    tc->fuzzer->RunFuzzerThread(tc);
+    return NULL;
+}
+
+void RDPFuzzer::Run(int argc, char **argv)
+{
+    if (GetOption("-start_server", argc, argv))
+    {
+        // run the server
+        printf("Running as server\n");
+        CoverageServer server;
+        server.Init(argc, argv);
+        server.RunServer();
+        return;
+    }
+
+    // printf("Fuzzer version 1.00\n");
+    puts(":: Jackalope_RDP ::");
+
+    samples_pending = 0;
+
+    num_crashes = 0;
+    num_unique_crashes = 0;
+    num_hangs = 0;
+    num_samples = 0;
+    num_samples_discarded = 0;
+    total_execs = 0;
+
+    ParseOptions(argc, argv);
+
+    SetupDirectories();
+
+    if (should_restore_state)
+    {
+        state = RESTORE_NEEDED;
+    }
+    else
+    {
+        GetFilesInDirectory(in_dir, input_files);
+
+        if (input_files.size() == 0)
+        {
+            WARN("Input directory is empty\n");
+        }
+        else
+        {
+            SAY("%d input files read\n", (int)input_files.size());
+        }
+        state = INPUT_SAMPLE_PROCESSING;
+    }
+
+    last_save_time = GetCurTime();
+
+    // modification for RDP fuzzing
+    FILE *fp = NULL;
+    fopen_s(&fp, this->rdpconf, "r");
+    for (int thread_id = 1; thread_id <= num_threads; thread_id++)
+    {
+        char conf[0x20] = {0};
+        fgets(conf, 0x20, fp);
+        int j = 0;
+        for (j = 0; j < 0x20; j++)
+        {
+            if (conf[j] == ':')
+            {
+                conf[j] = '\0';
+                break;
+            }
+        }
+        const char *host = conf;
+        u_short port = (u_short)atoi(&conf[j + 1]);
+
+        RDPThreadContext *tc = CreateRDPThreadContext(argc, argv, thread_id, host, port);
+        CreateThread(StartRDPFuzzThread, tc);
+    }
+    fclose(fp);
+
+    uint64_t last_execs = 0;
+
+    uint32_t secs_to_sleep = 1;
+
+    while (1)
+    {
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+        Sleep(secs_to_sleep * 1000);
+#else
+        usleep(secs_to_sleep * 1000000);
+#endif
+
+        size_t num_offsets = 0;
+        coverage_mutex.Lock();
+        for (auto iter = fuzzer_coverage.begin(); iter != fuzzer_coverage.end(); iter++)
+        {
+            num_offsets += iter->offsets.size();
+        }
+        coverage_mutex.Unlock();
+
+        printf("\nTotal execs: %lld\nUnique samples: %lld (%lld discarded)\nCrashes: %lld (%lld unique)\nHangs: %lld\nOffsets: %zu\nExecs/s: %lld\n", total_execs, num_samples, num_samples_discarded, num_crashes, num_unique_crashes, num_hangs, num_offsets, (total_execs - last_execs) / secs_to_sleep);
+        last_execs = total_execs;
+
+        if (state == FUZZING && dry_run)
+        {
+            printf("\nDry run done\n");
+            exit(0);
+        }
+    }
 }
