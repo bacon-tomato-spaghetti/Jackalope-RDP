@@ -4,7 +4,7 @@ from wtsapi import *
 
 HOST = gethostbyname(gethostname())
 PORT = 12345
-SIZE = 1024  # maximum buffer sizenesta
+SIZE = 1024  # maximum buffer size
 
 server_socket = socket(AF_INET, SOCK_STREAM)
 server_socket.bind((HOST, PORT))
