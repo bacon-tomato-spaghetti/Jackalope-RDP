@@ -23,6 +23,7 @@ public:
     SocketSampleDelivery *CreateSampleDelivery(int argc, char **argv, RDPThreadContext *tc);
 
     void Run(int argc, char **argv);
+    bool OutputFilter(Sample *original_sample, Sample *output_sample, ThreadContext *tc) override;
 
     const char *rdpconf; // config file (contains host and port of sockets of RDP servers)
 };

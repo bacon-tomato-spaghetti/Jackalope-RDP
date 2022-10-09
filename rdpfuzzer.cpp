@@ -264,3 +264,10 @@ void RDPFuzzer::Run(int argc, char **argv)
         }
     }
 }
+
+bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, ThreadContext *tc)
+{
+    memcpy(output_sample, original_sample, sizeof(Sample));
+
+    return true;
+}
