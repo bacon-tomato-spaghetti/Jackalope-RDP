@@ -61,3 +61,7 @@ fuzzer.exe -in in -out out -rdpconf rdp.conf -nthreads 2 -instrument_module msts
 ```
 
 If you want to run fuzzer for other RDP services, edit command line after `--`. And also, you should edit `RDPFuzzer::CreateRDPThreadContext()`. This function adds `/v:<server ip address>` to command line.
+
+## OutputFilter
+
+With writing `RDPFuzzer::OutputFilter()`, You can slightly edit mutated PDU. For example, you can remove invalid value of `msgType` or `bodySize` field.
