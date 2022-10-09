@@ -55,6 +55,11 @@ add_library(fuzzerlib STATIC
   directory.h
   fuzzer.cpp
   fuzzer.h
+
+  # modification for RDP fuzzing
+  rdpfuzzer.cpp 
+  rdpfuzzer.h
+  
   instrumentation.cpp
   instrumentation.h
   mutator.cpp

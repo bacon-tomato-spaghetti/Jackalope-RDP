@@ -22,6 +22,9 @@ limitations under the License.
 #include "mutators/grammar/grammarmutator.h"
 #include "mutators/grammar/grammarminimizer.h"
 
+// modification for RDP fuzzing
+#include "rdpfuzzer.h"
+
 class BinaryFuzzer : public Fuzzer
 {
     Mutator *CreateMutator(int argc, char **argv, ThreadContext *tc) override;
@@ -205,8 +208,6 @@ void TestGrammar(char *grammar_path)
 
 int main(int argc, char **argv)
 {
-    Fuzzer *fuzzer;
-
     char *grammar = GetOption("-test_grammar", argc, argv);
     if (grammar)
     {
@@ -215,15 +216,26 @@ int main(int argc, char **argv)
     }
 
     grammar = GetOption("-grammar", argc, argv);
-    if (grammar)
+
+    // modification for RDP fuzzing
+    const char *rdphost = GetOption("-rdphost", argc, argv);
+    u_short rdpport = (u_short)GetIntOption("-rdpport", argc, argv, 0);
+    if (rdphost && rdpport)
     {
-        fuzzer = new GrammarFuzzer(grammar);
+        RDPFuzzer *fuzzer = new RDPFuzzer(rdphost, rdpport);
+        fuzzer->Run(argc, argv);
+    }
+
+    else if (grammar)
+    {
+        GrammarFuzzer *fuzzer = new GrammarFuzzer(grammar);
+        fuzzer->Run(argc, argv);
     }
     else
     {
-        fuzzer = new BinaryFuzzer();
+        BinaryFuzzer *fuzzer = new BinaryFuzzer();
+        fuzzer->Run(argc, argv);
     }
 
-    fuzzer->Run(argc, argv);
     return 0;
 }
