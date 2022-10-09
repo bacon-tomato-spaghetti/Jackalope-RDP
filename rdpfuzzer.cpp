@@ -31,7 +31,7 @@ RDPFuzzer::RDPThreadContext *RDPFuzzer::CreateRDPThreadContext(int argc, char **
     {
         tc->target_argv[i] = target_argv[i];
     }
-    tc->target_argv[tc->target_argc - 1] = (char *)calloc(0x20, sizeof(char));
+    tc->target_argv[tc->target_argc - 1] = (char *)calloc(strlen(tc->host) + 4, sizeof(char));
     tc->target_argv[tc->target_argc - 1][0] = '/';
     tc->target_argv[tc->target_argc - 1][1] = 'v';
     tc->target_argv[tc->target_argc - 1][2] = ':';
