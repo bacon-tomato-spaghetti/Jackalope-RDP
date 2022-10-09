@@ -52,7 +52,7 @@ fuzzer.exe -in in -out out -rdpconf rdp.conf -channel RDPSND -nthreads 2 -instru
 ```
 
 - Options
-  - `-in`: Input directory name. There are seed files which contain sample PDUs in this directory.
+  - `-in`: Input directory name. There are seed files which contain sample PDUs.
   - `-out`: Output directory name. Jackalope automatically create and set this directory.
   - `-rdpconf`: RDP config file name.
   - `-channel`: Virtual channel name to fuzz.
