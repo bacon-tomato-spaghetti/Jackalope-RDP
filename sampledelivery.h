@@ -60,3 +60,17 @@ protected:
     SharedMemory shmobj;
     unsigned char *shm;
 };
+
+// modification for RDP fuzzing
+class SocketSampleDelivery : public SampleDelivery
+{
+public:
+    SocketSampleDelivery(const char *host, u_short port);
+    ~SocketSampleDelivery();
+
+    int DeliverSample(Sample *sample);
+
+    WSADATA wsaData;
+    SOCKET sock;
+    sockaddr_in sockAddr;
+};
