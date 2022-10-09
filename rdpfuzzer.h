@@ -6,6 +6,8 @@ class RDPFuzzer : public Fuzzer
 public:
     RDPFuzzer::RDPFuzzer(const char *rdpconf);
 
+    void PrintUsage();
+
     class RDPThreadContext : public ThreadContext
     {
     public:

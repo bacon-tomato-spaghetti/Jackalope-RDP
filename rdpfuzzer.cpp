@@ -10,6 +10,14 @@ RDPFuzzer::RDPFuzzer(const char *rdpconf)
     this->rdpconf = rdpconf;
 }
 
+void RDPFuzzer::PrintUsage()
+{
+    puts("[-] Usage: fuzzer.exe -in <input directory> -out <output directory> -rdpconf <RDP config file> -nthreads <number of threads> -clean_target_on_coverage false -persist <Jackalope options> -- mstsc <mstsc options except /v>");
+    puts("[-] Example: fuzzer.exe -in in -out out -rdpconf rdp.conf -nthreads 2 -instrument_module mstscax.dll -target_module mstscax.dll -clean_target_on_coverage false -persist -target_offset 0x484800 -iterations 10000 -cmp_coverage -dump_coverage -- mstsc /w:1000 /h:800");
+
+    exit(0);
+}
+
 RDPFuzzer::RDPThreadContext *RDPFuzzer::CreateRDPThreadContext(int argc, char **argv, int thread_id, const char *host, u_short port)
 {
     RDPThreadContext *tc = new RDPThreadContext();
