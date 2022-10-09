@@ -210,7 +210,19 @@ void RDPFuzzer::Run(int argc, char **argv)
 
     last_save_time = GetCurTime();
 
+
     // modification for RDP fuzzing
+
+    const char *channel = GetOption("-channel", argc, argv);
+    if (channel == NULL)
+    {
+        PrintUsage();
+    }
+    else
+    {
+        this->channel = channel;
+    }
+
     FILE *fp = NULL;
     fopen_s(&fp, this->rdpconf, "r");
     for (int thread_id = 1; thread_id <= num_threads; thread_id++)
@@ -233,6 +245,7 @@ void RDPFuzzer::Run(int argc, char **argv)
         CreateThread(StartRDPFuzzThread, tc);
     }
     fclose(fp);
+    
 
     uint64_t last_execs = 0;
 
