@@ -51,14 +51,33 @@ For example,
 fuzzer.exe -in in -out out -rdpconf rdp.conf -channel RDPSND -nthreads 2 -instrument_module mstscax.dll -target_module mstscax.dll -clean_target_on_coverage false -persist -target_offset 0x484800 -iterations 10000 -cmp_coverage -dump_coverage -- mstsc /w:1000 /h:800
 ```
 
-`rdp.conf` is like
+- Options
+  - `-in`: Input directory name. There are seed files which contain sample PDUs in this directory.
+  - `-out`: Output directory name. Jackalope automatically create and set this directory.
+  - `-rdpconf`: RDP config file name.
+  - `-channel`: Virtual channel name to fuzz.
+  - `-nthreads`: Number of fuzzing threads. This value had better be equal to number of lines of RDP config file.
+  - Jackalope options: https://github.com/googleprojectzero/Jackalope#running-jackalope
+  - TinyInst options: https://github.com/googleprojectzero/TinyInst#command-line-options
+
+If you want to run fuzzer for other RDP services, edit command line after `--`. And also, you should edit `RDPFuzzer::CreateRDPThreadContext()`, which adds `/v:<server ip address>` to command line.
+
+### RDP config file
+
+```
+<IP address of server1>:<socket port of server1>
+<IP address of server2>:<socket port of server2>
+...
+```
+
+For example,
 
 ```
 192.168.174.133:12345
 192.168.174.134:12345
 ```
 
-If you want to run fuzzer for other RDP services, edit command line after `--`. And also, you should edit `RDPFuzzer::CreateRDPThreadContext()`, which adds `/v:<server ip address>` to command line.
+
 
 ## OutputFilter
 
