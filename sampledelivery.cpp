@@ -17,24 +17,27 @@ limitations under the License.
 #include "common.h"
 #include "sampledelivery.h"
 
-int FileSampleDelivery::DeliverSample(Sample *sample) {
-  return sample->Save(filename.c_str());
+int FileSampleDelivery::DeliverSample(Sample *sample)
+{
+    return sample->Save(filename.c_str());
 }
 
-SHMSampleDelivery::SHMSampleDelivery(char *name, size_t size) {
-  shmobj.Open(name, size);
-  shm = shmobj.GetData();
+SHMSampleDelivery::SHMSampleDelivery(char *name, size_t size)
+{
+    shmobj.Open(name, size);
+    shm = shmobj.GetData();
 }
 
-SHMSampleDelivery::~SHMSampleDelivery() {
-  shmobj.Close();
+SHMSampleDelivery::~SHMSampleDelivery()
+{
+    shmobj.Close();
 }
 
-int SHMSampleDelivery::DeliverSample(Sample *sample) {
-  uint32_t *size_ptr = (uint32_t *)shm;
-  unsigned char *data_ptr = shm + 4;
-  *size_ptr = (uint32_t)sample->size;
-  memcpy(data_ptr, sample->bytes, sample->size);
-  return 1;
+int SHMSampleDelivery::DeliverSample(Sample *sample)
+{
+    uint32_t *size_ptr = (uint32_t *)shm;
+    unsigned char *data_ptr = shm + 4;
+    *size_ptr = (uint32_t)sample->size;
+    memcpy(data_ptr, sample->bytes, sample->size);
+    return 1;
 }
-
