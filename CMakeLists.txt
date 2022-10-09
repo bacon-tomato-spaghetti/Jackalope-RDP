@@ -1,0 +1,146 @@
+# Copyright 2020 Google LLC
+# 
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+# 
+#     https://www.apache.org/licenses/LICENSE-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+cmake_minimum_required(VERSION "3.1")
+set (CMAKE_CXX_STANDARD 17)
+
+# Determine whether TinyInst should be build for arm64 or x86
+if(APPLE AND NOT DEFINED ${ARCHITECTURE})
+  EXECUTE_PROCESS(COMMAND uname -m COMMAND tr -d '\n' OUTPUT_VARIABLE ARCHITECTURE)
+  if(${ARCHITECTURE} MATCHES arm64)
+    add_definitions(-DARM64)
+  endif()
+endif()
+
+if(UNIX AND NOT APPLE)
+  set(LINUX TRUE)
+endif()
+
+if(NOT LINUX)
+  add_subdirectory(TinyInst)
+endif()
+
+project("fuzzer")
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/third_party/Mersenne)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/TinyInst)
+
+if(LINUX)
+  set(platform_specific_sources
+    sancovinstrumentation.h
+    sancovinstrumentation.cpp
+  )
+else()
+  set(platform_specific_sources
+    tinyinstinstrumentation.h
+    tinyinstinstrumentation.cpp
+  )
+endif()
+
+add_library(fuzzerlib STATIC
+  client.cpp
+  client.h
+  directory.cpp
+  directory.h
+  fuzzer.cpp
+  fuzzer.h
+  instrumentation.cpp
+  instrumentation.h
+  mutator.cpp
+  mutator.h
+  minimizer.cpp
+  minimizer.h
+  mutex.cpp
+  mutex.h
+  prng.cpp
+  prng.h
+  third_party/Mersenne/mersenne.cpp
+  third_party/Mersenne/mersenne.h
+  runresult.h
+  sample.cpp
+  sample.h
+  sampledelivery.cpp
+  sampledelivery.h
+  server.cpp
+  server.h
+  thread.cpp
+  thread.h
+  shm.cpp
+  shm.h
+  range.h
+  rangetracker.h
+  rangetracker.cpp
+  mutators/grammar/grammar.h
+  mutators/grammar/grammar.cpp
+  mutators/grammar/grammarmutator.h
+  mutators/grammar/grammarmutator.cpp
+  mutators/grammar/grammarminimizer.h
+  mutators/grammar/grammarminimizer.cpp
+  ${platform_specific_sources}
+  )
+  
+if(LINUX)
+  target_link_libraries(fuzzerlib rt)
+  target_link_libraries(fuzzerlib pthread)
+endif()
+
+# In case of Linux, compile a minimum TinyInst
+# with only multiplatform essentials.
+if(LINUX) 
+  add_library(tinyinst STATIC
+    TinyInst/common.h
+    TinyInst/common.cpp
+    TinyInst/coverage.h
+    TinyInst/coverage.cpp
+    )
+endif()
+
+add_dependencies(fuzzerlib tinyinst)
+target_link_libraries(fuzzerlib tinyinst)
+
+if (WIN32)
+  target_link_libraries(fuzzerlib "Ws2_32.lib")
+endif()
+
+add_executable(fuzzer
+  main.cpp
+)
+
+target_link_libraries(fuzzer fuzzerlib)
+
+add_executable(test
+  test.cpp
+  )
+  
+if(LINUX)
+  target_link_libraries(test rt)
+endif()
+
+if(LINUX)
+  if (NOT(CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
+    message(FATAL_ERROR "You need to use Clang to compile the target with Sanitizer Coverage")
+  endif()
+
+  add_executable(sancovtest
+    sancovclient.h
+    sancovclient.cpp
+    sancovtest.cpp
+    )
+  target_link_libraries(sancovtest rt)
+  target_compile_options(sancovtest PRIVATE "-fsanitize-coverage=trace-pc-guard")
+  target_compile_options(sancovtest PRIVATE "-fsanitize=address")
+  target_link_options(sancovtest PRIVATE "-fsanitize=address")
+endif()
+
+
