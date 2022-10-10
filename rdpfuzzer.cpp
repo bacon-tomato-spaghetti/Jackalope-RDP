@@ -313,5 +313,23 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         }
     }
 
+    else if (!strcmp(this->channel, "RDPGFX"))
+    {
+        // cmdId
+        USHORT cmdId = *(PUSHORT)&output_sample->bytes[0];
+        cmdId %= 0x17;
+        cmdId += 1;
+        if (cmdId >= 0x14)
+        {
+            cmdId += 1;
+        }
+
+        // pduLength
+        if (output_sample->size >= 8)
+        {
+            *(PUINT)&output_sample->bytes[4] = (UINT)output_sample->size;
+        }
+    }
+
     return true;
 }
