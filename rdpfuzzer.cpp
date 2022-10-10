@@ -245,7 +245,7 @@ void RDPFuzzer::Run(int argc, char **argv)
         CreateThread(StartRDPFuzzThread, tc);
     }
     fclose(fp);
-    
+
 
     uint64_t last_execs = 0;
 
@@ -281,6 +281,19 @@ void RDPFuzzer::Run(int argc, char **argv)
 bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, ThreadContext *tc)
 {
     *output_sample = *original_sample;
+
+    if (!strcmp(this->channel, "RDPSND"))
+    {
+        // msgType
+        output_sample->bytes[0] %= 0xd;
+        output_sample->bytes[0] += 1;
+
+        // bodySize
+        if (output_sample->size >= 4)
+        {
+            *(USHORT *)&output_sample->bytes[2] = (USHORT)output_sample->size - 4;
+        }
+    }
 
     return true;
 }
