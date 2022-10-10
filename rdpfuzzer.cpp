@@ -291,7 +291,7 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         // bodySize
         if (output_sample->size >= 4)
         {
-            *(USHORT *)&output_sample->bytes[2] = (USHORT)output_sample->size - 4;
+            *(PUSHORT)&output_sample->bytes[2] = (USHORT)output_sample->size - 4;
         }
     }
 
