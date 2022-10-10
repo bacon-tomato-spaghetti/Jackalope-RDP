@@ -295,5 +295,23 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         }
     }
 
+    else if (!strcmp(this->channel, "CLIPRDR"))
+    {
+        // msgType
+        USHORT msgType = *(PUSHORT)&output_sample->bytes[0];
+        msgType %= 0xa;
+        msgType += 1;
+        if (msgType == 6)
+        {
+            msgType++;
+        }
+
+        // dataLen
+        if (output_sample->size >= 8)
+        {
+            *(PUSHORT)&output_sample->bytes[4] = (USHORT)output_sample->size - 8;
+        }
+    }
+
     return true;
 }
