@@ -309,7 +309,7 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         // dataLen
         if (output_sample->size >= 8)
         {
-            *(PUSHORT)&output_sample->bytes[4] = (USHORT)output_sample->size - 8;
+            *(PUINT)&output_sample->bytes[4] = (UINT)output_sample->size - 8;
         }
     }
 
