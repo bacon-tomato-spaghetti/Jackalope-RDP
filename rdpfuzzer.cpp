@@ -223,8 +223,7 @@ void RDPFuzzer::Run(int argc, char **argv)
         this->channel = channel;
     }
 
-    FILE *fp = NULL;
-    fopen_s(&fp, this->rdpconf, "r");
+    FILE *fp = fopen(this->rdpconf, "r");
     for (int thread_id = 1; thread_id <= num_threads; thread_id++)
     {
         char conf[0x20] = {0};
