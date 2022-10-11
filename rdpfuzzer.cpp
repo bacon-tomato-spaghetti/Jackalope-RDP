@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include "rdpfuzzer.h"
 #include "common.h"
 #include "mutator.h"
