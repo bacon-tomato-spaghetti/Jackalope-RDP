@@ -86,16 +86,24 @@ RunResult TinyInstInstrumentation::Run(int argc, char **argv, uint32_t init_time
             switch (status)
             {
             case DEBUGGER_CRASHED:
-                FATAL("Process crashed before reaching the target method\n");
+                // FATAL("Process crashed before reaching the target method\n");
+                SAY("[-] PROGRAM ABORT : Process crashed before reaching the target method\n");
+                SAY("         Location : %s(), %s:%u\n\n", __FUNCTION__, __FILE__, __LINE__);
                 break;
             case DEBUGGER_HANGED:
-                FATAL("Process hanged before reaching the target method\n");
+                // FATAL("Process hanged before reaching the target method\n");
+                SAY("[-] PROGRAM ABORT : Process hanged before reaching the target method\n");
+                SAY("         Location : %s(), %s:%u\n\n", __FUNCTION__, __FILE__, __LINE__);
                 break;
             case DEBUGGER_PROCESS_EXIT:
-                FATAL("Process exited before reaching the target method\n");
+                // FATAL("Process exited before reaching the target method\n");
+                SAY("[-] PROGRAM ABORT : Process exited before reaching the target method\n");
+                SAY("         Location : %s(), %s:%u\n\n", __FUNCTION__, __FILE__, __LINE__);
                 break;
             default:
-                FATAL("An unknown problem occured before reaching the target method\n");
+                // FATAL("An unknown problem occured before reaching the target method\n");
+                SAY("[-] PROGRAM ABORT : An unknown problem occured before reaching the target method\n");
+                SAY("         Location : %s(), %s:%u\n\n", __FUNCTION__, __FILE__, __LINE__);
                 break;
             }
         }
@@ -131,11 +139,15 @@ RunResult TinyInstInstrumentation::Run(int argc, char **argv, uint32_t init_time
         }
         else
         {
-            FATAL("Unexpected status received from the debugger\n");
+            // FATAL("Unexpected status received from the debugger\n");
+            SAY("[-] PROGRAM ABORT : Unexpected status received from the debugger\n");
+            SAY("         Location : %s(), %s:%u\n\n", __FUNCTION__, __FILE__, __LINE__);
         }
         break;
     default:
-        FATAL("Unexpected status received from the debugger\n");
+        // FATAL("Unexpected status received from the debugger\n");
+        SAY("[-] PROGRAM ABORT : Unexpected status received from the debugger\n");
+        SAY("         Location : %s(), %s:%u\n\n", __FUNCTION__, __FILE__, __LINE__);
         break;
     }
 
