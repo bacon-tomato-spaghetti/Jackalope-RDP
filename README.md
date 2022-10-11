@@ -77,8 +77,22 @@ For example,
 192.168.174.134:12345
 ```
 
-
-
 ## OutputFilter
 
 With writing `RDPFuzzer::OutputFilter()`, You can slightly edit mutated PDU. For example, you can remove invalid value of `msgType` or `bodySize` field.
+
+## Use Jackalope server
+
+You can run Jackalope in parallel, using `-start_server` and `-server` options.
+
+In machine which you want to use as server, do
+
+```powershell
+fuzzer.exe -out out -start_server <server ip address>:<server port>
+```
+
+In machines which you want to use as clients, do
+
+```powershell
+fuzzer.exe -in in -out out -server <server ip address>:<server port> <other options>
+```
