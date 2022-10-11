@@ -15,6 +15,7 @@ client_socket, client_addr = server_socket.accept()
 print(f'[+] Client addr: {client_addr}')
 
 while True:
+    server_socket.settimeout(20)
     data = client_socket.recv(SIZE)
     dataSize = len(data)
     print(f'[+] {dataSize}bytes received')
