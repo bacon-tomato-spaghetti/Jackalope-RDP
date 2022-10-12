@@ -312,6 +312,7 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
 {
     *output_sample = *original_sample;
 
+    /*
     if (!strcmp(this->channel, "RDPSND"))
     {
         // msgType
@@ -360,6 +361,7 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
             *(PUINT)&output_sample->bytes[4] = (UINT)output_sample->size;
         }
     }
+    */
 
     return true;
 }
