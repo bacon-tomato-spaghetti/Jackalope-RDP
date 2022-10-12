@@ -20,7 +20,7 @@ public:
     Mutator *RDPFuzzer::CreateMutator(int argc, char **argv, ThreadContext *tc) override;
     bool TrackHotOffsets() override { return true; }
 
-    SocketSampleDelivery *CreateSampleDelivery(int argc, char **argv, RDPThreadContext *tc);
+    SampleDelivery *CreateSampleDelivery(int argc, char **argv, RDPThreadContext *tc);
 
     void Run(int argc, char **argv);
     bool OutputFilter(Sample *original_sample, Sample *output_sample, ThreadContext *tc) override;

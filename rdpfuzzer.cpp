@@ -14,8 +14,8 @@ RDPFuzzer::RDPFuzzer(const char *rdpconf)
 
 void RDPFuzzer::PrintUsage()
 {
-    puts("[-] Usage: fuzzer.exe -in <input directory> -out <output directory> -rdpconf <RDP config file> -nthreads <number of threads> -clean_target_on_coverage false -persist <Jackalope options> -- mstsc <mstsc options except /v>");
-    puts("[-] Example: fuzzer.exe -in in -out out -rdpconf rdp.conf -nthreads 2 -instrument_module mstscax.dll -target_module mstscax.dll -clean_target_on_coverage false -persist -target_offset 0x484800 -iterations 10000 -cmp_coverage -dump_coverage -- mstsc /w:1000 /h:800");
+    puts("[-] Usage: fuzzer.exe -in <input directory> -out <output directory> -rdpconf <RDP config file> -nthreads <number of threads> -delivery <delivery> -clean_target_on_coverage false -persist <Jackalope options> -- mstsc <mstsc options except /v>");
+    puts("[-] Example: fuzzer.exe -in in -out out -rdpconf rdp.conf -nthreads 2 -delivery socket -instrument_module mstscax.dll -target_module mstscax.dll -clean_target_on_coverage false -persist -target_offset 0x484800 -iterations 10000 -cmp_coverage -dump_coverage -- mstsc /w:1000 /h:800");
 
     exit(0);
 }
@@ -151,9 +151,38 @@ Mutator *RDPFuzzer::CreateMutator(int argc, char **argv, ThreadContext *tc)
     }
 }
 
-SocketSampleDelivery *RDPFuzzer::CreateSampleDelivery(int argc, char **argv, RDPThreadContext *tc)
+SampleDelivery *RDPFuzzer::CreateSampleDelivery(int argc, char **argv, RDPThreadContext *tc)
 {
-    return new SocketSampleDelivery(tc->host, tc->port);
+    char *delivery = GetOption("-delivery", argc, argv);
+
+    if (delivery)
+    {
+        if (!strcmp(delivery, "shmem"))
+        {
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
+            std::string shm_name = std::string("shm_fuzz_") + std::to_string(GetCurrentProcessId()) + "_" + std::to_string(tc->thread_id);
+#else
+            std::string shm_name = std::string("/shm_fuzz_") + std::to_string(getpid()) + "_" + std::to_string(tc->thread_id);
+#endif
+            // ReplaceTargetCmdArg(tc, "@@", shm_name.c_str());
+
+            SHMSampleDelivery *sampleDelivery = new SHMSampleDelivery((char *)shm_name.c_str(), Sample::max_size + 4);
+            sampleDelivery->Init(argc, argv);
+            return sampleDelivery;
+        }
+        else if (!strcmp(delivery, "socket"))
+        {
+            return new SocketSampleDelivery(tc->host, tc->port);
+        }
+        else
+        {
+            FATAL("Unknown sample delivery option");
+        }
+    }
+    else
+    {
+        PrintUsage();
+    }
 }
 
 void *StartRDPFuzzThread(void *arg)
