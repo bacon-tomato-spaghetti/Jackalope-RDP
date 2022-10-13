@@ -14,6 +14,8 @@ print('[+] listening...')
 client_socket, client_addr = server_socket.accept()
 print(f'[+] Client addr: {client_addr}')
 
+RDPConnected = False
+
 while True:
     server_socket.settimeout(20)
     data = client_socket.recv(SIZE)
@@ -21,17 +23,15 @@ while True:
     print(f'[+] {dataSize}bytes received')
     hexdump(data, len(data))
 
-    RDPServer = OpenServer(b'localhost')
+    if not RDPConnected:
+        RDPServer = OpenServer(b'localhost')
+        RDPConnected = True
 
-    while True:
-        RDPSND = VirtualChannelOpen(b'RDPSND', False)
-        if RDPSND:
-            break
-        else:
-            time.sleep(1)
+        while True:
+            RDPSND = VirtualChannelOpen(b'RDPSND', False)
+            if RDPSND:
+                break
+            else:
+                time.sleep(1)
 
     VirtualChannelWrite(RDPSND, data)
-    VirtualChannelClose(RDPSND)
-    CloseServer(RDPServer)
-
-client_socket.close()
