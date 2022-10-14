@@ -315,8 +315,9 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
     if (!strcmp(this->channel, "RDPSND"))
     {
         // msgType
-        output_sample->bytes[0] %= 0xd;
-        output_sample->bytes[0] += 1;
+        PUCHAR msgType = (PUCHAR)&output_sample->bytes[0];
+        *msgType %= 0xd;
+        *msgType += 1;
 
         // bodySize
         if (output_sample->size >= 4)
@@ -328,12 +329,12 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
     else if (!strcmp(this->channel, "CLIPRDR"))
     {
         // msgType
-        USHORT msgType = *(PUSHORT)&output_sample->bytes[0];
-        msgType %= 0xa;
-        msgType += 1;
-        if (msgType == 6)
+        PUSHORT msgType = (PUSHORT)&output_sample->bytes[0];
+        *msgType %= 0xa;
+        *msgType += 1;
+        if (*msgType == 6)
         {
-            msgType++;
+            *msgType++;
         }
 
         // dataLen
@@ -346,12 +347,12 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
     else if (!strcmp(this->channel, "RDPGFX"))
     {
         // cmdId
-        USHORT cmdId = *(PUSHORT)&output_sample->bytes[0];
-        cmdId %= 0x17;
-        cmdId += 1;
-        if (cmdId >= 0x14)
+        PUSHORT cmdId = (PUSHORT)&output_sample->bytes[0];
+        *cmdId %= 0x17;
+        *cmdId += 1;
+        if (*cmdId >= 0x14)
         {
-            cmdId += 1;
+            *cmdId += 1;
         }
 
         // pduLength
