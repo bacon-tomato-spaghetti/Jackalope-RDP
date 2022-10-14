@@ -22,7 +22,7 @@ while True:
     print(f'[+] {dataSize}bytes received')
     hexdump(data, len(data))
 
-    sampleFile = sampleDir + '\\sample_' + datetime.datetime.now().strftime('%Y-%m-%d-%H:%M:%S')
+    sampleFile = sampleDir + '\\sample_' + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
     f = open(sampleFile, 'wb')
     f.write(data)
     f.close()
