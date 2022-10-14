@@ -2,7 +2,7 @@ from socket import gethostbyname, gethostname, socket, AF_INET, SOCK_STREAM
 import time
 from wtsapi import *
 
-HOST = gethostbyname(gethostname())
+HOST = '127.0.0.2'
 PORT = 12345
 SIZE = 9999  # maximum buffer size
 
@@ -14,7 +14,7 @@ print('[+] listening...')
 client_socket, client_addr = server_socket.accept()
 print(f'[+] Client addr: {client_addr}')
 
-try:
+while True:
     data = client_socket.recv(SIZE)
     dataSize = len(data)
     print(f'[+] {dataSize}bytes received')
@@ -30,7 +30,8 @@ try:
         else:
             time.sleep(1)
 
-    VirtualChannelWrite(RDPSND, data)
+    if not VirtualChannelWrite(RDPSND, data):
+        continue
 
     while True:
         data = client_socket.recv(SIZE)
@@ -38,7 +39,5 @@ try:
         print(f'[+] {dataSize}bytes received')
         hexdump(data, len(data))
 
-        VirtualChannelWrite(RDPSND, data)
-
-except:
-    exit(-1)
+        if not VirtualChannelWrite(RDPSND, data):
+            break
