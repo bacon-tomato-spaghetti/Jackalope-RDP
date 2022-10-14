@@ -8,6 +8,12 @@ PORT = 12345
 SIZE = 9999  # maximum buffer size
 sampleDir = '.\\samples'
 
+def saveSample(data):
+    sampleFile = sampleDir + '\\sample_' + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')
+    f = open(sampleFile, 'wb')
+    f.write(data)
+    f.close()
+
 server_socket = socket(AF_INET, SOCK_STREAM)
 server_socket.bind((HOST, PORT))
 server_socket.listen()
@@ -22,10 +28,7 @@ while True:
     print(f'[+] {dataSize}bytes received')
     hexdump(data, len(data))
 
-    sampleFile = sampleDir + '\\sample_' + datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-    f = open(sampleFile, 'wb')
-    f.write(data)
-    f.close()
+    saveSample(data)
 
     RDPServer = OpenServer(b'localhost')
     RDPConnected = True
@@ -45,6 +48,8 @@ while True:
         dataSize = len(data)
         print(f'[+] {dataSize}bytes received')
         hexdump(data, len(data))
+
+        saveSample(data)
 
         if not VirtualChannelWrite(RDPSND, data):
             break
