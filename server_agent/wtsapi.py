@@ -59,8 +59,7 @@ def VirtualChannelOpen(pVirtualName: bytearray, isDynVC: bool) -> HANDLE:
     hChannelHandle = cast(WTSVirtualChannelOpenEx(
         WTS_CURRENT_SESSION, cast(pVirtualName, LPSTR), flags), HANDLE)
     if hChannelHandle:
-        print(
-            f'[+] {pVirtualName.decode()} virtual channel opened (Handle: {hex(hChannelHandle.value)})')
+        print(f'[+] {pVirtualName.decode()} virtual channel opened (Handle: {hex(hChannelHandle.value)})')
         return hChannelHandle
     else:
         print(f'[-] Failed to open {pVirtualName.decode()} virtual channel')
@@ -97,7 +96,6 @@ def VirtualChannelWrite(hChannelHandle: HANDLE, Buffer: bytearray) -> BOOL:
         return result
     else:
         print('[-] Failed to write to virtual channel')
-        exit()
 
 
 # Read from virtual channel
