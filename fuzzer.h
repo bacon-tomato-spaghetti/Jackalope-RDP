@@ -196,6 +196,7 @@ protected:
     void JobDone(FuzzerJob *job);
     void FuzzJob(ThreadContext *tc, FuzzerJob *job);
     void ProcessSample(ThreadContext *tc, FuzzerJob *job);
+    void HandleCrash(ThreadContext* tc, string crash_name);
 
     uint64_t num_crashes;
     uint64_t num_unique_crashes;
@@ -215,6 +216,7 @@ protected:
     std::string sample_dir;
     std::string crash_dir;
     std::string hangs_dir;
+    std::string crash_inputs_dir;
 
     // std::string target_cmd;
     int target_argc;

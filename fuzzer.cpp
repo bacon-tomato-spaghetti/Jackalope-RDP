@@ -149,6 +149,9 @@ void Fuzzer::SetupDirectories()
     CreateDirectory(hangs_dir);
     sample_dir = DirJoin(out_dir, "samples");
     CreateDirectory(sample_dir);
+
+    crash_inputs_dir = DirJoin(out_dir, "crash_inputs");
+    CreateDirectory(crash_inputs_dir);
 }
 
 void *StartFuzzThread(void *arg)
@@ -297,7 +300,7 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
             FATAL("Repeatedly failed to deliver sample");
         }
     }
-
+    dynamic_cast<TinyInstInstrumentation*>(tc->instrumentation)->AppendToList(std::string(sample->bytes, 0, sample->size));
     RunResult result = tc->instrumentation->Run(tc->target_argc, tc->target_argv, init_timeout, timeout);
     tc->instrumentation->GetCoverage(*coverage, true);
 
@@ -352,7 +355,7 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
             string outfile = DirJoin(crash_dir, crash_filename);
             sample->Save(outfile.c_str());
             output_mutex.Unlock();
-
+            HandleCrash(tc, crash_filename);
             if (server)
             {
                 server_mutex.Lock();
@@ -936,6 +939,25 @@ void Fuzzer::ProcessSample(ThreadContext *tc, FuzzerJob *job)
             WARN("Input sample has no new stable coverage");
         }
     }
+}
+
+void Fuzzer::HandleCrash(ThreadContext* tc, string crash_name) {
+    std::string cur_inputs_dir = DirJoin(crash_inputs_dir, crash_name);
+    CreateDirectory(cur_inputs_dir);
+
+    auto list = dynamic_cast<TinyInstInstrumentation*>(tc->instrumentation)->ExportList();
+    int idx = 1;
+    std::string sample_name;
+    FILE* fp;
+
+    for (auto itr = list.begin(); itr != list.end(); itr++) {
+        sample_name = DirJoin(cur_inputs_dir, std::to_string(idx));
+        fp = fopen(sample_name.c_str(), "wb");
+        fwrite((*itr).c_str(), (*itr).length(), 1, fp);
+        fclose(fp);
+        idx++;
+    }
+    dynamic_cast<TinyInstInstrumentation*>(tc->instrumentation)->ClearList();
 }
 
 void Fuzzer::RunFuzzerThread(ThreadContext *tc)

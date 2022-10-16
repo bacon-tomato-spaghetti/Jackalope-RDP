@@ -18,6 +18,7 @@ limitations under the License.
 
 #include <inttypes.h>
 #include <string>
+#include <vector>
 #include "coverage.h"
 #include "runresult.h"
 #include "instrumentation.h"
@@ -44,10 +45,16 @@ public:
 
   std::string GetCrashName() override;
 
+
+  void AppendToList(std::string sample);
+  std::vector<std::string> ExportList();
+  void ClearList();
+
 protected:
   LiteCov * instrumentation;
   bool persist;
   int num_iterations;
   int cur_iteration;
+  std::vector<std::string> cur_loop_inputs;
 };
 

@@ -42,6 +42,7 @@ RunResult TinyInstInstrumentation::Run(int argc, char **argv, uint32_t init_time
         {
             instrumentation->Kill();
             cur_iteration = 0;
+            this->ClearList();
         }
     }
 
@@ -222,6 +223,19 @@ std::string TinyInstInstrumentation::GetCrashName()
     stream << AnonymizeAddress(exception.access_address);
     return stream.str();
 }
+
+
+void TinyInstInstrumentation::AppendToList(std::string sample) {
+    this->cur_loop_inputs.push_back(sample);
+}
+void TinyInstInstrumentation::ExportList() {
+    return this->cur_loop_inputs;
+}
+void TinyInstInstrumentation::ClearList() {
+    this->cur_loop_inputs.clear();
+}
+
+
 
 uint64_t TinyInstInstrumentation::GetReturnValue()
 {
