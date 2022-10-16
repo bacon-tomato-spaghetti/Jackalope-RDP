@@ -25,36 +25,35 @@ limitations under the License.
 
 class LiteCov;
 
-class TinyInstInstrumentation : public Instrumentation {
+class TinyInstInstrumentation : public Instrumentation
+{
 public:
-  ~TinyInstInstrumentation();
+    ~TinyInstInstrumentation();
 
-  void Init(int argc, char **argv) override;
+    void Init(int argc, char **argv) override;
 
-  RunResult Run(int argc, char** argv, uint32_t init_timeout, uint32_t timeout) override;
-  RunResult RunWithCrashAnalysis(int argc, char** argv, uint32_t init_timeout, uint32_t timeout) override;
+    RunResult Run(int argc, char **argv, uint32_t init_timeout, uint32_t timeout) override;
+    RunResult RunWithCrashAnalysis(int argc, char **argv, uint32_t init_timeout, uint32_t timeout) override;
 
-  void CleanTarget() override;
+    void CleanTarget() override;
 
-  bool HasNewCoverage() override;
-  void GetCoverage(Coverage &coverage, bool clear_coverage) override;
-  void ClearCoverage() override;
-  void IgnoreCoverage(Coverage &coverage) override;
+    bool HasNewCoverage() override;
+    void GetCoverage(Coverage &coverage, bool clear_coverage) override;
+    void ClearCoverage() override;
+    void IgnoreCoverage(Coverage &coverage) override;
 
-  uint64_t GetReturnValue() override;
+    uint64_t GetReturnValue() override;
 
-  std::string GetCrashName() override;
+    std::string GetCrashName() override;
 
-
-  void AppendToList(std::string sample);
-  std::vector<std::string> ExportList();
-  void ClearList();
+    void AppendToList(std::string sample);
+    std::vector<std::string> ExportList();
+    void ClearList();
 
 protected:
-  LiteCov * instrumentation;
-  bool persist;
-  int num_iterations;
-  int cur_iteration;
-  std::vector<std::string> cur_loop_inputs;
+    LiteCov *instrumentation;
+    bool persist;
+    int num_iterations;
+    int cur_iteration;
+    std::vector<std::string> cur_loop_inputs;
 };
-
