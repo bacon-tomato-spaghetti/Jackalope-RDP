@@ -228,7 +228,7 @@ std::string TinyInstInstrumentation::GetCrashName()
 void TinyInstInstrumentation::AppendToList(std::string sample) {
     this->cur_loop_inputs.push_back(sample);
 }
-void TinyInstInstrumentation::ExportList() {
+std::vector<std::string> TinyInstInstrumentation::ExportList() {
     return this->cur_loop_inputs;
 }
 void TinyInstInstrumentation::ClearList() {
