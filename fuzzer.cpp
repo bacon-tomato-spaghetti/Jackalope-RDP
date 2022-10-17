@@ -300,7 +300,7 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
             FATAL("Repeatedly failed to deliver sample");
         }
     }
-    dynamic_cast<TinyInstInstrumentation*>(tc->instrumentation)->AppendToList(std::string(sample->bytes, 0, sample->size), sample->size); // modification for RDP fuzzing
+    dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->AppendToList(std::string(sample->bytes, 0, sample->size), sample->size); // modification for RDP fuzzing
     RunResult result = tc->instrumentation->Run(tc->target_argc, tc->target_argv, init_timeout, timeout);
     tc->instrumentation->GetCoverage(*coverage, true);
 
@@ -309,6 +309,8 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
     {
         string crash_desc = tc->instrumentation->GetCrashName();
 
+        // modification for RDP fuzzing
+        /*
         if (crash_reproduce_retries > 0)
         {
             if (TryReproduceCrash(tc, sample, init_timeout, timeout) == CRASH)
@@ -321,6 +323,7 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
                 crash_desc = "flaky_" + crash_desc;
             }
         }
+        */
 
         bool should_save_crash = false;
         int duplicates = 0;
