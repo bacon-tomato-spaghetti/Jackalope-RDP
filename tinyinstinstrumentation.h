@@ -46,8 +46,8 @@ public:
 
     std::string GetCrashName() override;
 
-    void AppendToList(std::string sample);
-    std::vector<std::string> ExportList();
+    void AppendToList(std::string sample, size_t sample_size);
+    std::vector<std::pair<std::string, size_t>> ExportList();
     void ClearList();
 
 protected:
@@ -55,5 +55,5 @@ protected:
     bool persist;
     int num_iterations;
     int cur_iteration;
-    std::vector<std::string> cur_loop_inputs;
+    std::vector<std::pair<std::string, size_t>> cur_loop_inputs; // modification for RDP fuzzing
 };

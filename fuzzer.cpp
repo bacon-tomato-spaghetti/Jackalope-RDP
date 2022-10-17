@@ -300,7 +300,7 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
             FATAL("Repeatedly failed to deliver sample");
         }
     }
-    dynamic_cast<TinyInstInstrumentation*>(tc->instrumentation)->AppendToList(std::string(sample->bytes, 0, sample->size));
+    dynamic_cast<TinyInstInstrumentation*>(tc->instrumentation)->AppendToList(std::string(sample->bytes, 0, sample->size), sample->size); // modification for RDP fuzzing
     RunResult result = tc->instrumentation->Run(tc->target_argc, tc->target_argv, init_timeout, timeout);
     tc->instrumentation->GetCoverage(*coverage, true);
 
@@ -954,7 +954,7 @@ void Fuzzer::HandleCrash(ThreadContext* tc, std::string crash_name) {
     for (auto itr = list.begin(); itr != list.end(); itr++) {
         sample_name = DirJoin(cur_inputs_dir, std::to_string(idx));
         fp = fopen(sample_name.c_str(), "wb");
-        fwrite((*itr).c_str(), (*itr).length(), 1, fp);
+        fwrite((*itr).first.c_str(), (*itr).second, 1, fp);
         fclose(fp);
         idx++;
     }
