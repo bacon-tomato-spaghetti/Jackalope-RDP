@@ -224,18 +224,18 @@ std::string TinyInstInstrumentation::GetCrashName()
     return stream.str();
 }
 
-
-void TinyInstInstrumentation::AppendToList(std::string sample) {
+void TinyInstInstrumentation::AppendToList(std::string sample)
+{
     this->cur_loop_inputs.push_back(sample);
 }
-std::vector<std::string> TinyInstInstrumentation::ExportList() {
+std::vector<std::string> TinyInstInstrumentation::ExportList()
+{
     return this->cur_loop_inputs;
 }
-void TinyInstInstrumentation::ClearList() {
+void TinyInstInstrumentation::ClearList()
+{
     this->cur_loop_inputs.clear();
 }
-
-
 
 uint64_t TinyInstInstrumentation::GetReturnValue()
 {
