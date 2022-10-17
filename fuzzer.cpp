@@ -941,6 +941,7 @@ void Fuzzer::ProcessSample(ThreadContext *tc, FuzzerJob *job)
     }
 }
 
+// modification for RDP fuzzing
 void Fuzzer::HandleCrash(ThreadContext* tc, std::string crash_name) {
     std::string cur_inputs_dir = DirJoin(crash_inputs_dir, crash_name);
     CreateDirectory(cur_inputs_dir);
