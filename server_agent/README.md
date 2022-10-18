@@ -14,12 +14,10 @@ Implementation of WTS API in Python using `ctypes`.
 
 This program receives input(PDU) from client through socket, and sends it to client through RDP virtual channel(For example, `RDPSND`).
 
-### autoexec.py
-
-This program executes `server_agent.py` continuously.
-
 ## Usage
 
+In server,
+
 ```powershell
-python3 autoexec.py
+python3 server_agent.py
 ```
