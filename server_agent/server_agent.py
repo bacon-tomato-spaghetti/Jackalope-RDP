@@ -6,6 +6,8 @@ HOST = '127.0.0.2'
 PORT = 12345
 SIZE = 9999  # maximum buffer size
 
+VCHandleValid = False  # check if virtual channel handle is valid
+
 server_socket = socket(AF_INET, SOCK_STREAM)
 server_socket.bind((HOST, PORT))
 server_socket.listen()
@@ -25,15 +27,21 @@ while True:
     while True:
         RDPSND = VirtualChannelOpen(b'RDPSND', False)
         if RDPSND:
+            VCHandleValid = True
             break
         else:
             time.sleep(1)
 
-    while True:
+    for i in range(10):
         if VirtualChannelWrite(RDPSND, data):
             break
         else:
-            time.sleep(1)
+            if i == 9:
+                VCHandleValid = False
+            else:
+                time.sleep(1)
+    if not VCHandleValid:
+        continue
 
     while True:
         data = client_socket.recv(SIZE)
@@ -41,8 +49,13 @@ while True:
         print(f'[+] {dataSize}bytes received')
         hexdump(data, len(data))
 
-        while True:
+        for i in range(10):
             if VirtualChannelWrite(RDPSND, data):
                 break
             else:
-                time.sleep(1)
+                if i == 9:
+                    VCHandleValid = False
+                else:
+                    time.sleep(1)
+        if not VCHandleValid:
+            break
