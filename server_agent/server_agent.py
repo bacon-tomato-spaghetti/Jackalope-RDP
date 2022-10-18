@@ -32,11 +32,11 @@ while True:
         else:
             time.sleep(1)
 
-    for i in range(10):
+    for i in range(30):
         if VirtualChannelWrite(RDPSND, data):
             break
         else:
-            if i == 9:
+            if i == 29:
                 VCHandleValid = False
             else:
                 time.sleep(1)
@@ -49,11 +49,11 @@ while True:
         print(f'[+] {dataSize}bytes received')
         hexdump(data, len(data))
 
-        for i in range(10):
+        for i in range(30):
             if VirtualChannelWrite(RDPSND, data):
                 break
             else:
-                if i == 9:
+                if i == 29:
                     VCHandleValid = False
                 else:
                     time.sleep(1)
