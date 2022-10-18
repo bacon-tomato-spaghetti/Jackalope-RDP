@@ -21,7 +21,6 @@ while True:
     hexdump(data, len(data))
 
     RDPServer = OpenServer(b'localhost')
-    RDPConnected = True
 
     while True:
         RDPSND = VirtualChannelOpen(b'RDPSND', False)
