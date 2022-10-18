@@ -16,8 +16,6 @@ Windows 10 x64
 
 ```powershell
 git clone https://github.com/bacon-tomato-spaghetti/Jackalope_RDP.git
-cd Jackalope_RDP
-git clone --recurse-submodules https://github.com/googleprojectzero/TinyInst.git
 ```
 
 ### Build
