@@ -1600,6 +1600,7 @@ DebuggerStatus Debugger::HandleExceptionInternal(EXCEPTION_RECORD *exception_rec
 
     case EXCEPTION_ACCESS_VIOLATION:
     {
+        /*
         if (target_function_defined &&
             ((size_t)exception_record->ExceptionAddress == PERSIST_END_EXCEPTION))
         {
@@ -1609,6 +1610,7 @@ DebuggerStatus Debugger::HandleExceptionInternal(EXCEPTION_RECORD *exception_rec
             return DEBUGGER_TARGET_END;
         }
         else
+        */
         {
             // Debug(&DebugEv->u.Exception.ExceptionRecord);
             dbg_continue_status = DBG_EXCEPTION_NOT_HANDLED;
