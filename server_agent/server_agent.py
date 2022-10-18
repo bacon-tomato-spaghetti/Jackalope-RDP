@@ -30,8 +30,11 @@ while True:
         else:
             time.sleep(1)
 
-    if not VirtualChannelWrite(RDPSND, data):
-        continue
+    while True:
+        if VirtualChannelWrite(RDPSND, data):
+            break
+        else:
+            time.sleep(1)
 
     while True:
         data = client_socket.recv(SIZE)
@@ -39,5 +42,8 @@ while True:
         print(f'[+] {dataSize}bytes received')
         hexdump(data, len(data))
 
-        if not VirtualChannelWrite(RDPSND, data):
-            break
+        while True:
+            if VirtualChannelWrite(RDPSND, data):
+                break
+            else:
+                time.sleep(1)
