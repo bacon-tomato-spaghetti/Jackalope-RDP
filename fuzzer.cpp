@@ -358,7 +358,7 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
             string outfile = DirJoin(crash_dir, crash_filename);
             sample->Save(outfile.c_str());
             output_mutex.Unlock();
-            HandleCrash(tc, crash_filename);
+            // HandleCrash(tc, crash_filename);
             if (server)
             {
                 server_mutex.Lock();
