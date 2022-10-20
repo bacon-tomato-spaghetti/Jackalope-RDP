@@ -545,6 +545,8 @@ int CoverageServer::ReportCrash(socket_type sock)
             int idx = 1;
             for (std::vector<Sample>::iterator itr = crash_inputs.begin(); itr != crash_inputs.end(); itr++)
             {
+                std::string idx_str = std::to_string(idx);
+                std::string sample_filename = std::string(6 - min(6, idx_str.length()), '0') + idx_str;
                 std::string outfile = DirJoin(outdir, std::to_string(idx));
                 itr->Save(outfile.c_str());
                 idx++;
