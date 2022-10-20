@@ -43,7 +43,7 @@ typedef int socket_type;
 
 #define closesocket close
 
-#endif 
+#endif
 
 #define MAX_CONNECTIONS 8
 
@@ -56,85 +56,90 @@ typedef int socket_type;
 
 class CoverageServer;
 
-class ClientSocket {
+class ClientSocket
+{
 public:
-  socket_type client_socket;
-  CoverageServer *server;
+    socket_type client_socket;
+    CoverageServer *server;
 };
 
-class ServerCommon {
+class ServerCommon
+{
 protected:
-  int Read(socket_type sock, void *buf, size_t size);
-  int Write(socket_type sock, const char *buf, size_t size);
-  int SendSample(socket_type sock, Sample &sample);
-  int RecvSample(socket_type sock, Sample &sample);
-  int SendString(socket_type sock, std::string &str);
-  int RecvString(socket_type sock, std::string &str);
-  int SendCoverage(socket_type sock, Coverage &coverage);
-  int RecvCoverage(socket_type sock, Coverage &coverage);
+    int Read(socket_type sock, void *buf, size_t size);
+    int Write(socket_type sock, const char *buf, size_t size);
+    int SendSample(socket_type sock, Sample &sample);
+    int RecvSample(socket_type sock, Sample &sample);
+    int SendString(socket_type sock, std::string &str);
+    int RecvString(socket_type sock, std::string &str);
+    int SendCoverage(socket_type sock, Coverage &coverage);
+    int RecvCoverage(socket_type sock, Coverage &coverage);
 };
 
-class CoverageServer : public ServerCommon {
+class CoverageServer : public ServerCommon
+{
 public:
-  CoverageServer() : server_timestamp(0), server_port(DEFAULT_SERVER_PORT), num_samples(0), num_crashes(0), num_unique_crashes(0) { }
+    CoverageServer() : server_timestamp(0), server_port(DEFAULT_SERVER_PORT), num_samples(0), num_crashes(0), num_unique_crashes(0) {}
 
-  // for incremental updates
-  struct TimestampIndex {
-    uint64_t timestamp;
-    uint64_t index;
-  };
+    // for incremental updates
+    struct TimestampIndex
+    {
+        uint64_t timestamp;
+        uint64_t index;
+    };
 
-  struct ServerCorpus {
-    std::vector<Sample> samples;
-    std::vector<TimestampIndex> timestamps;
-  };
+    struct ServerCorpus
+    {
+        std::vector<Sample> samples;
+        std::vector<TimestampIndex> timestamps;
+    };
 
-  ServerCorpus corpus;
+    ServerCorpus corpus;
 
-  Coverage total_coverage;
+    Coverage total_coverage;
 
-  std::string out_dir;
+    std::string out_dir;
 
-  size_t num_crashes;
-  size_t num_unique_crashes;
-  std::string crash_dir;
+    size_t num_crashes;
+    size_t num_unique_crashes;
+    std::string crash_dir;
 
-  std::string sample_dir;
-  size_t num_samples;
+    std::string sample_dir;
+    size_t num_samples;
 
-  Mutex connection_mutex;
-  size_t num_connections;
+    Mutex connection_mutex;
+    size_t num_connections;
 
-  int ServeUpdates(socket_type sock);
-  int ReportCrash(socket_type sock);
-  int ReportNewCoverage(socket_type sock);
-  uint64_t GetIndex(std::vector<TimestampIndex> &timestamps, uint64_t timestamp, uint64_t last_index);
+    int ServeUpdates(socket_type sock);
+    int ReportCrash(socket_type sock);
+    int ReportNewCoverage(socket_type sock);
+    uint64_t GetIndex(std::vector<TimestampIndex> &timestamps, uint64_t timestamp, uint64_t last_index);
 
-  void SaveState();
-  void RestoreState();
+    void SaveState();
+    void RestoreState();
 
-  bool OnNewCoverage(Coverage *client_coverage);
-  void UpdateModuleCoverage(ModuleCoverage *client_coverage);
-  bool HasNewCoverage(Coverage *client_coverage, Coverage *new_coverage);
+    bool OnNewCoverage(Coverage *client_coverage);
+    void UpdateModuleCoverage(ModuleCoverage *client_coverage);
+    bool HasNewCoverage(Coverage *client_coverage, Coverage *new_coverage);
 
-  void RunServer();
-  int HandleConnection(socket_type sock);
+    void RunServer();
+    int HandleConnection(socket_type sock);
 
-  void StatusThread();
+    void StatusThread();
 
-  void Init(int argc, char **argv);
-  void SetupDirectories();
+    void Init(int argc, char **argv);
+    void SetupDirectories();
 
-  bool CheckFilename(std::string& filename);
+    bool CheckFilename(std::string &filename);
 
-  uint64_t server_timestamp;
+    uint64_t server_timestamp;
 
-  ReadWriteMutex mutex;
+    ReadWriteMutex mutex;
 
-  // separate mutex for writing crashes
-  Mutex crash_mutex;
-  std::unordered_map<std::string, int> unique_crashes;
+    // separate mutex for writing crashes
+    Mutex crash_mutex;
+    std::unordered_map<std::string, int> unique_crashes;
 
-  std::string server_ip;
-  uint16_t server_port;
+    std::string server_ip;
+    uint16_t server_port;
 };

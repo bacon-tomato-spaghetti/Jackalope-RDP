@@ -22,40 +22,41 @@ limitations under the License.
 #include "server.h"
 #include "prng.h"
 
-class CoverageClient : public ServerCommon {
+class CoverageClient : public ServerCommon
+{
 public:
-  CoverageClient() : last_timestamp(0), num_samples(0),
-    have_server(false), server_port(DEFAULT_SERVER_PORT)
-  {
-    PRNG::SecureRandom(&client_id, sizeof(client_id));
-  }
-  ~CoverageClient();
+    CoverageClient() : last_timestamp(0), num_samples(0),
+                       have_server(false), server_port(DEFAULT_SERVER_PORT)
+    {
+        PRNG::SecureRandom(&client_id, sizeof(client_id));
+    }
+    ~CoverageClient();
 
-  void Init(int argc, char **argv);
+    void Init(int argc, char **argv);
 
-  int ReportNewCoverage(Coverage *new_coverage, Sample *new_sample);
-  int GetUpdates(std::list<Sample *> &new_samples, uint64_t total_execs);
-  int ReportCrash(Sample *crash, std::string &crash_desc);
+    int ReportNewCoverage(Coverage *new_coverage, Sample *new_sample);
+    int GetUpdates(std::list<Sample *> &new_samples, uint64_t total_execs);
+    int ReportCrash(Sample *crash, std::string &crash_desc);
 
-  void SaveState(FILE* fp);
-  void LoadState(FILE* fp);
+    void SaveState(FILE *fp);
+    void LoadState(FILE *fp);
 
 private:
-  int TryConnectToServer();
-  int ConnectToServer(char command);
-  int DisconnectFromServer();
+    int TryConnectToServer();
+    int ConnectToServer(char command);
+    int DisconnectFromServer();
 
-  uint64_t last_timestamp;
-  uint64_t client_id;
-  uint64_t num_samples;
+    uint64_t last_timestamp;
+    uint64_t client_id;
+    uint64_t num_samples;
 
-  std::string server_ip;
-  uint16_t server_port;
+    std::string server_ip;
+    uint16_t server_port;
 
-  bool have_server;
+    bool have_server;
 
-  socket_type sock;
+    socket_type sock;
 
-  bool keep_samples_in_memory;
-  std::string sample_dir;
+    bool keep_samples_in_memory;
+    std::string sample_dir;
 };
