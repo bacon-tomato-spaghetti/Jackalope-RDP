@@ -149,10 +149,6 @@ void Fuzzer::SetupDirectories()
     CreateDirectory(hangs_dir);
     sample_dir = DirJoin(out_dir, "samples");
     CreateDirectory(sample_dir);
-
-    // modification for RDP fuzzing
-    crash_inputs_dir = DirJoin(out_dir, "crash_inputs");
-    CreateDirectory(crash_inputs_dir);
 }
 
 void *StartFuzzThread(void *arg)
@@ -355,15 +351,24 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
         {
             // modification for RDP fuzzing
             
-            string crash_filename = crash_desc + "_" + std::to_string(duplicates);
+            std::string crash_name = crash_desc + "_" + std::to_string(duplicates);
 
             output_mutex.Lock();
-            string outfile = DirJoin(crash_dir, crash_filename);
-            sample->Save(outfile.c_str());
-            output_mutex.Unlock();
 
+            std::string outdir = DirJoin(crash_dir, crash_name);
             std::vector<Sample> crash_inputs = dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ExportList();
-            HandleCrash(tc, crash_filename, crash_inputs);
+
+            int idx = 1;
+            for (std::vector<Sample>::iterator itr = crash_inputs.begin(); itr != crash_inputs.end(); itr++)
+            {
+                std::string idx_str = std::to_string(idx);
+                std::string sample_filename = std::string(6 - min(6, idx_str.length()), '0') + idx_str;
+                std::string outfile = DirJoin(outdir, sample_filename);
+                itr->Save(outfile.c_str());
+                idx++;
+            }
+            
+            output_mutex.Unlock();
 
             if (server)
             {
@@ -950,23 +955,6 @@ void Fuzzer::ProcessSample(ThreadContext *tc, FuzzerJob *job)
         {
             WARN("Input sample has no new stable coverage");
         }
-    }
-}
-
-// modification for RDP fuzzing
-void Fuzzer::HandleCrash(ThreadContext *tc, std::string crash_name, vector<Sample> crash_inputs)
-{
-    std::string outdir = DirJoin(crash_inputs_dir, crash_name);
-    CreateDirectory(outdir);
-    
-    int idx = 1;
-    for (std::vector<Sample>::iterator itr = crash_inputs.begin(); itr != crash_inputs.end(); itr++)
-    {
-        std::string idx_str = std::to_string(idx);
-        std::string sample_filename = std::string(6 - min(6, idx_str.length()), '0') + idx_str;
-        std::string outfile = DirJoin(outdir, sample_filename);
-        itr->Save(outfile.c_str());
-        idx++;
     }
 }
 
