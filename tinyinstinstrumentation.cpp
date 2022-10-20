@@ -227,12 +227,12 @@ std::string TinyInstInstrumentation::GetCrashName()
 
 // modification for RDP fuzzing
 
-void TinyInstInstrumentation::AppendToList(std::string sample, size_t sample_size)
+void TinyInstInstrumentation::AppendToList(Sample sample)
 {
-    this->cur_loop_inputs.push_back(make_pair(sample, sample_size));
+    this->cur_loop_inputs.push_back(sample);
 }
 
-std::vector<std::pair<std::string, size_t>> TinyInstInstrumentation::ExportList()
+std::vector<Sample> TinyInstInstrumentation::ExportList()
 {
     return this->cur_loop_inputs;
 }

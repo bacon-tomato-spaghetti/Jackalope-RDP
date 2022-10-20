@@ -23,6 +23,8 @@ limitations under the License.
 #include "runresult.h"
 #include "instrumentation.h"
 
+#include "sample.h" // modification for RDP fuzzing
+
 class LiteCov;
 
 class TinyInstInstrumentation : public Instrumentation
@@ -47,8 +49,8 @@ public:
     std::string GetCrashName() override;
 
     // modification for RDP fuzzing
-    void AppendToList(std::string sample, size_t sample_size);
-    std::vector<std::pair<std::string, size_t>> ExportList();
+    void AppendToList(Sample sample);
+    std::vector<Sample> ExportList();
     void ClearList();
 
 protected:
@@ -57,5 +59,5 @@ protected:
     int num_iterations;
     int cur_iteration;
 
-    std::vector<std::pair<std::string, size_t>> cur_loop_inputs; // modification for RDP fuzzing
+    std::vector<Sample> cur_loop_inputs; // modification for RDP fuzzing
 };

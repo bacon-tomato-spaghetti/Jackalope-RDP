@@ -301,7 +301,7 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
             FATAL("Repeatedly failed to deliver sample");
         }
     }
-    dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->AppendToList(std::string(sample->bytes, 0, sample->size), sample->size); // modification for RDP fuzzing
+    dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->AppendToList(*sample); // modification for RDP fuzzing
     RunResult result = tc->instrumentation->Run(tc->target_argc, tc->target_argv, init_timeout, timeout);
     tc->instrumentation->GetCoverage(*coverage, true);
 
@@ -362,13 +362,13 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
             sample->Save(outfile.c_str());
             output_mutex.Unlock();
 
-            HandleCrash(tc, crash_filename);
+            std::vector<Sample> crash_inputs = dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ExportList();
+            HandleCrash(tc, crash_filename, crash_inputs);
 
             if (server)
             {
                 // modification for RDP fuzzing
                 server_mutex.Lock();
-                std::vector<std::pair<std::string, size_t>> crash_inputs = dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ExportList();
                 server->ReportCrash(sample, crash_desc, crash_inputs);
                 server_mutex.Unlock();
             }
@@ -954,20 +954,16 @@ void Fuzzer::ProcessSample(ThreadContext *tc, FuzzerJob *job)
 }
 
 // modification for RDP fuzzing
-void Fuzzer::HandleCrash(ThreadContext *tc, std::string crash_name)
+void Fuzzer::HandleCrash(ThreadContext *tc, std::string crash_name, vector<Sample> crash_inputs)
 {
     std::string outdir = DirJoin(crash_inputs_dir, crash_name);
     CreateDirectory(outdir);
-
-    std::vector<std::pair<std::string, size_t>> crash_inputs = dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ExportList();
     
     int idx = 1;
-    for (std::vector<std::pair<std::string, size_t>>::iterator itr = crash_inputs.begin(); itr != crash_inputs.end(); itr++)
+    for (std::vector<Sample>::iterator itr = crash_inputs.begin(); itr != crash_inputs.end(); itr++)
     {
         std::string outfile = DirJoin(outdir, std::to_string(idx));
-        FILE *fp = fopen(outfile.c_str(), "wb");
-        fwrite(itr->first.c_str(), itr->second, 1, fp);
-        fclose(fp);
+        itr->Save(outfile.c_str());
         idx++;
     }
 }

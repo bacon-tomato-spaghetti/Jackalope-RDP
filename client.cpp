@@ -148,7 +148,7 @@ int CoverageClient::DisconnectFromServer()
     return 1;
 }
 
-int CoverageClient::ReportCrash(Sample *crash, std::string &crash_desc, std::vector<std::pair<std::string, size_t>> crash_inputs)
+int CoverageClient::ReportCrash(Sample *crash, std::string &crash_desc, std::vector<Sample> crash_inputs)
 {
     ConnectToServer('X');
     send(sock, "S", 1, 0);
@@ -165,10 +165,10 @@ int CoverageClient::ReportCrash(Sample *crash, std::string &crash_desc, std::vec
     }
 
     // send crash samples
-    for (std::vector<std::pair<std::string, size_t>>::iterator itr = crash_inputs.begin(); itr != crash_inputs.end(); itr++)
+    for (std::vector<Sample>::iterator itr = crash_inputs.begin(); itr != crash_inputs.end(); itr++)
     {
-        uint64_t sample_size = itr->second;
-        if (!Write(sock, (const char *)&sample_size, sizeof(sample_size)) || !Write(sock, itr->first.c_str(), itr->second))
+        uint64_t sample_size = itr->size;
+        if (!Write(sock, (const char *)&sample_size, sizeof(sample_size)) || !Write(sock, itr->bytes, itr->size))
         {
             DisconnectFromServer();
             return 0;
