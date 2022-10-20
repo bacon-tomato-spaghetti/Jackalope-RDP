@@ -150,6 +150,7 @@ void Fuzzer::SetupDirectories()
     sample_dir = DirJoin(out_dir, "samples");
     CreateDirectory(sample_dir);
 
+    // modification for RDP fuzzing
     crash_inputs_dir = DirJoin(out_dir, "crash_inputs");
     CreateDirectory(crash_inputs_dir);
 }
