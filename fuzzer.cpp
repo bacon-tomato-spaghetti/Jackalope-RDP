@@ -359,7 +359,7 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
             string outfile = DirJoin(crash_dir, crash_filename);
             sample->Save(outfile.c_str());
             output_mutex.Unlock();
-            // HandleCrash(tc, crash_filename);
+            HandleCrash(tc, crash_filename);
             if (server)
             {
                 server_mutex.Lock();
@@ -946,24 +946,26 @@ void Fuzzer::ProcessSample(ThreadContext *tc, FuzzerJob *job)
 }
 
 // modification for RDP fuzzing
-void Fuzzer::HandleCrash(ThreadContext* tc, std::string crash_name) {
+void Fuzzer::HandleCrash(ThreadContext *tc, std::string crash_name)
+{
     std::string cur_inputs_dir = DirJoin(crash_inputs_dir, crash_name);
     CreateDirectory(cur_inputs_dir);
 
-    std::vector<std::pair<std::string, size_t>> list = dynamic_cast<TinyInstInstrumentation*>(tc->instrumentation)->ExportList();
+    std::vector<std::pair<std::string, size_t>> list = dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ExportList();
     int idx = 1;
     std::string sample_name;
-    FILE* fp = NULL;
+    FILE *fp = NULL;
 
-    for (std::vector<std::pair<std::string, size_t>>::iterator itr = list.begin(); itr != list.end(); itr++) {
+    for (std::vector<std::pair<std::string, size_t>>::iterator itr = list.begin(); itr != list.end(); itr++)
+    {
         sample_name = DirJoin(cur_inputs_dir, std::to_string(idx));
         fp = fopen(sample_name.c_str(), "wb");
         fwrite(itr->first.c_str(), itr->second, 1, fp);
         fclose(fp);
         idx++;
     }
-    
-    dynamic_cast<TinyInstInstrumentation*>(tc->instrumentation)->ClearList();
+
+    dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ClearList();
 }
 
 void Fuzzer::RunFuzzerThread(ThreadContext *tc)
