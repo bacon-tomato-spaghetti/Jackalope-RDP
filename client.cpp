@@ -148,7 +148,7 @@ int CoverageClient::DisconnectFromServer()
     return 1;
 }
 
-int CoverageClient::ReportCrash(Sample *crash, std::string &crash_desc)
+int CoverageClient::ReportCrash(Sample *crash, std::string &crash_desc, std::vector<std::pair<std::string, size_t>> crash_inputs)
 {
     ConnectToServer('X');
     send(sock, "S", 1, 0);
@@ -157,11 +157,36 @@ int CoverageClient::ReportCrash(Sample *crash, std::string &crash_desc)
         DisconnectFromServer();
         return 0;
     }
+
+
+    // modification for RDP fuzzing
+
+    // send number of crash samples
+    uint64_t sample_num = crash_inputs.size();
+    if (!Write(sock, (const char *)&sample_num, sizeof(sample_num)))
+    {
+        DisconnectFromServer();
+        return 0;
+    }
+
+    // send crash samples
+    for (std::vector<std::pair<std::string, size_t>>::iterator itr = crash_inputs.begin(); itr != crash_inputs.end(); itr++)
+    {
+        uint64_t sample_size = itr->second;
+        if (!Write(sock, (const char *)&sample_size, sizeof(sample_size)) || !Write(sock, itr->first.c_str(), itr->second))
+        {
+            DisconnectFromServer();
+            return 0;
+        }
+    }
+
+
     if (!SendString(sock, crash_desc))
     {
         DisconnectFromServer();
         return 0;
     }
+
     send(sock, "N", 1, 0);
     DisconnectFromServer();
     return 1;

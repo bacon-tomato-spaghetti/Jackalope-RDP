@@ -475,11 +475,28 @@ int CoverageServer::ReportCrash(socket_type sock)
         if (command != 'S')
             return 0;
 
-        Sample sample;
-        if (!RecvSample(sock, sample))
+
+        // modification for RDP fuzzing
+
+        // receive number of crash samples
+        uint64_t sample_num = 0;
+        if (!Read(sock, (void *)&sample_num, sizeof(sample_num)))
         {
             return 0;
         }
+
+        // receive crash samples
+        std::vector<Sample> crash_inputs;
+        for (int i = 0; i < sample_num; i++)
+        {
+            Sample sample;
+            if (!RecvSample(sock, sample))
+            {
+                return 0;
+            }
+            crash_inputs.push_back(sample);
+        }
+
 
         std::string crash_desc;
         if (!RecvString(sock, crash_desc))
@@ -519,9 +536,24 @@ int CoverageServer::ReportCrash(socket_type sock)
 
         if (should_save_crash)
         {
-            std::string crash_filename = crash_desc + "_" + std::to_string(duplicates);
-            std::string outfile = DirJoin(crash_dir, crash_filename);
-            sample.Save(outfile.c_str());
+            // modification for RDP fuzzing
+
+            std::string crash_dirname = crash_desc + "_" + std::to_string(duplicates);
+            std::string outdir = DirJoin(crash_dir, crash_dirname);
+            CreateDirectory(outdir);
+
+            int idx = 1;
+            std::string sample_name;
+            FILE *fp = NULL;
+
+            for (std::vector<Sample>::iterator itr = crash_inputs.begin(); itr != crash_inputs.end(); itr++)
+            {
+                sample_name = DirJoin(outdir, std::to_string(idx));
+                fp = fopen(sample_name.c_str(), "wb");
+                fwrite(itr->bytes, itr->size, 1, fp);
+                fclose(fp);
+                idx++;
+            }
         }
 
         crash_mutex.Unlock();

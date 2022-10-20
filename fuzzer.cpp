@@ -353,19 +353,27 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
 
         if (should_save_crash)
         {
+            // modification for RDP fuzzing
+            
             string crash_filename = crash_desc + "_" + std::to_string(duplicates);
 
             output_mutex.Lock();
             string outfile = DirJoin(crash_dir, crash_filename);
             sample->Save(outfile.c_str());
             output_mutex.Unlock();
+
             HandleCrash(tc, crash_filename);
+
             if (server)
             {
+                // modification for RDP fuzzing
                 server_mutex.Lock();
-                server->ReportCrash(sample, crash_desc);
+                std::vector<std::pair<std::string, size_t>> crash_inputs = dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ExportList();
+                server->ReportCrash(sample, crash_desc, crash_inputs);
                 server_mutex.Unlock();
             }
+
+            dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ClearList();
         }
     }
 
@@ -964,8 +972,6 @@ void Fuzzer::HandleCrash(ThreadContext *tc, std::string crash_name)
         fclose(fp);
         idx++;
     }
-
-    dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ClearList();
 }
 
 void Fuzzer::RunFuzzerThread(ThreadContext *tc)

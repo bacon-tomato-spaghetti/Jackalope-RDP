@@ -36,7 +36,7 @@ public:
 
     int ReportNewCoverage(Coverage *new_coverage, Sample *new_sample);
     int GetUpdates(std::list<Sample *> &new_samples, uint64_t total_execs);
-    int ReportCrash(Sample *crash, std::string &crash_desc);
+    int ReportCrash(Sample *crash, std::string &crash_desc, std::vector<std::pair<std::string, size_t>> crash_inputs); // modification for RDP fuzzing
 
     void SaveState(FILE *fp);
     void LoadState(FILE *fp);
