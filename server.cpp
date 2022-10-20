@@ -543,15 +543,10 @@ int CoverageServer::ReportCrash(socket_type sock)
             CreateDirectory(outdir);
 
             int idx = 1;
-            std::string sample_name;
-            FILE *fp = NULL;
-
             for (std::vector<Sample>::iterator itr = crash_inputs.begin(); itr != crash_inputs.end(); itr++)
             {
-                sample_name = DirJoin(outdir, std::to_string(idx));
-                fp = fopen(sample_name.c_str(), "wb");
-                fwrite(itr->bytes, itr->size, 1, fp);
-                fclose(fp);
+                std::string outfile = DirJoin(outdir, std::to_string(idx));
+                itr->Save(outfile.c_str());
                 idx++;
             }
         }
