@@ -356,6 +356,7 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
             output_mutex.Lock();
 
             std::string outdir = DirJoin(crash_dir, crash_name);
+            CreateDirectory(outdir);
             std::vector<Sample> crash_inputs = dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ExportList();
 
             int idx = 1;
