@@ -152,12 +152,7 @@ int CoverageClient::ReportCrash(Sample *crash, std::string &crash_desc, std::vec
 {
     ConnectToServer('X');
     send(sock, "S", 1, 0);
-    if (!SendSample(sock, *crash))
-    {
-        DisconnectFromServer();
-        return 0;
-    }
-
+    
 
     // modification for RDP fuzzing
 
