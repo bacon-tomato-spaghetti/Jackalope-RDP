@@ -46,7 +46,7 @@ fuzzer.exe -in <input directory> -out <output directory> -rdpconf <RDP config fi
 For example,
 
 ```powershell
-fuzzer.exe -in in -out out -rdpconf rdp.conf -channel RDPSND -nthreads 2 -instrument_module mstscax.dll -target_module mstscax.dll -clean_target_on_coverage false -persist -target_offset 0x484800 -iterations 10000 -cmp_coverage -dump_coverage -- mstsc /w:1000 /h:800
+fuzzer.exe -in in -out out -rdpconf rdp.conf -channel RDPSND -nthreads 3 -target_offset 0x484800 -t 20000 -instrument_module mstscax.dll -target_module mstscax.dll -clean_target_on_coverage false -persist -iterations 10000 -cmp_coverage -dump_coverage -keep_samples_in_memory false -server 192.168.0.2:54321 -- mstsc /w:1000 /h:800
 ```
 
 - Options
