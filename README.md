@@ -94,13 +94,3 @@ In machines which you want to use as clients, do
 ```powershell
 fuzzer.exe -in in -out out -server <server ip address>:<server port> <other options>
 ```
-
-## Reproduce crashes
-
-When crashes occur, all inputs in that iteration are saved in `<output directory>\crashes` in client, and `<output directory>\server_crashes` in server. You can reproduce crashes using `-reproduce` option.
-
-Copy all crash inputs to `<input directory>`, then do
-
-```powershell
-fuzzer.exe -reproduce <input directory> -rdpconf rdp.conf -- mstsc <mstsc options except /v>
-```
