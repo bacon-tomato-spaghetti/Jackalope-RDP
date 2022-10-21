@@ -153,36 +153,7 @@ Mutator *RDPFuzzer::CreateMutator(int argc, char **argv, ThreadContext *tc)
 
 SampleDelivery *RDPFuzzer::CreateSampleDelivery(int argc, char **argv, RDPThreadContext *tc)
 {
-    char *delivery = GetOption("-delivery", argc, argv);
-
-    if (delivery)
-    {
-        if (!strcmp(delivery, "shmem"))
-        {
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32)
-            std::string shm_name = std::string("shm_fuzz_") + std::to_string(GetCurrentProcessId()) + "_" + std::to_string(tc->thread_id);
-#else
-            std::string shm_name = std::string("/shm_fuzz_") + std::to_string(getpid()) + "_" + std::to_string(tc->thread_id);
-#endif
-            // ReplaceTargetCmdArg(tc, "@@", shm_name.c_str());
-
-            SHMSampleDelivery *sampleDelivery = new SHMSampleDelivery((char *)shm_name.c_str(), Sample::max_size + 4);
-            sampleDelivery->Init(argc, argv);
-            return sampleDelivery;
-        }
-        else if (!strcmp(delivery, "socket"))
-        {
-            return new SocketSampleDelivery(tc->host, tc->port);
-        }
-        else
-        {
-            FATAL("Unknown sample delivery option");
-        }
-    }
-    else
-    {
-        PrintUsage();
-    }
+    return new SocketSampleDelivery(tc->host, tc->port);
 }
 
 void *StartRDPFuzzThread(void *arg)
