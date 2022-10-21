@@ -204,6 +204,50 @@ void RDPFuzzer::Run(int argc, char **argv)
         return;
     }
 
+
+    // modification for RDP fuzzing
+
+    const char *inputs = GetOption("-reproduce", argc, argv);
+    puts("[+] Reproducing crash");
+
+    FILE *fp = fopen(this->rdpconf, "r");
+    char conf[0x20] = {0};
+    fgets(conf, 0x20, fp);
+    int j = 0;
+    for (j = 0; j < 0x20; j++)
+    {
+        if (conf[j] == ':')
+        {
+            conf[j] = '\0';
+            break;
+        }
+    }
+    const char *host = conf;
+    u_short port = (u_short)atoi(&conf[j + 1]);
+
+    if (inputs)
+    {
+        size_t input_num = GetFilesInDirectory(std::string(inputs), input_files);
+        RDPThreadContext *tc = RDPFuzzer::CreateRDPThreadContext(argc, argv, 1, host, port);
+
+        for (std::list<std::string>::iterator itr = input_files.begin(); itr != input_files.end(); itr++)
+        {
+            Sample sample;
+            sample.filename = *itr;
+            sample.Load();
+
+            tc->sampleDelivery->DeliverSample(&sample);
+            RunResult result = tc->instrumentation->Run(tc->target_argc, tc->target_argv, init_timeout, timeout);
+        }
+
+        return;
+    }
+    else
+    {
+        PrintUsage();
+    }
+
+
     // printf("Fuzzer version 1.00\n");
     puts(":: Jackalope_RDP ::");
 
@@ -254,7 +298,7 @@ void RDPFuzzer::Run(int argc, char **argv)
         this->channel = channel;
     }
 
-    FILE *fp = fopen(this->rdpconf, "r");
+    fp = fopen(this->rdpconf, "r");
     for (int thread_id = 1; thread_id <= num_threads; thread_id++)
     {
         char conf[0x20] = {0};
