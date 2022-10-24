@@ -107,6 +107,10 @@ RunResult TinyInstInstrumentation::Run(int argc, char **argv, uint32_t init_time
                 SAY("         Location : %s(), %s:%u\n\n", __FUNCTION__, __FILE__, __LINE__);
                 break;
             }
+
+            instrumentation->Kill();
+            cur_iteration = 0;
+            status = instrumentation->Run(argc, argv, init_timeout);
         }
 
         instrumentation->ClearCoverage();
