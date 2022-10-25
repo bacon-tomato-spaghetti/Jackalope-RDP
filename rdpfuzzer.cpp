@@ -297,59 +297,5 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         }
     }
 
-    else if (!strcmp(this->channel, "PNPDR"))
-    {
-        // Size
-        if (output_sample->size >= 4)
-        {
-            PUINT Size = (PUINT)&output_sample->bytes[0];
-            *Size = output_sample->size;
-        }
-
-        // PacketId (0x65 ~ 0x68)
-        if (output_sample->size >= 8)
-        {
-            PUINT PacketId = (PUINT)&output_sample->bytes[4];
-            *PacketId %= 4;
-            *PacketId += 0x65;
-        }
-    }
-
-    else if (!strcmp(this->channel, "CLIPRDR"))
-    {
-        // msgType
-        PUSHORT msgType = (PUSHORT)&output_sample->bytes[0];
-        *msgType %= 0xa;
-        *msgType += 1;
-        if (*msgType == 6)
-        {
-            *msgType++;
-        }
-
-        // dataLen
-        if (output_sample->size >= 8)
-        {
-            *(PUINT)&output_sample->bytes[4] = (UINT)output_sample->size - 8;
-        }
-    }
-
-    else if (!strcmp(this->channel, "RDPGFX"))
-    {
-        // cmdId
-        PUSHORT cmdId = (PUSHORT)&output_sample->bytes[0];
-        *cmdId %= 0x17;
-        *cmdId += 1;
-        if (*cmdId >= 0x14)
-        {
-            *cmdId += 1;
-        }
-
-        // pduLength
-        if (output_sample->size >= 8)
-        {
-            *(PUINT)&output_sample->bytes[4] = (UINT)output_sample->size;
-        }
-    }
-
     return true;
 }
