@@ -281,10 +281,10 @@ void RDPFuzzer::Run(int argc, char **argv)
 
 bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, ThreadContext *tc)
 {
-    *output_sample = *original_sample;
-
     if (!strcmp(this->channel, "RDPSND"))
     {
+        *output_sample = *original_sample;
+
         // msgType
         PUCHAR msgType = (PUCHAR)&output_sample->bytes[0];
         *msgType %= 0xd;
@@ -295,7 +295,9 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         {
             *(PUSHORT)&output_sample->bytes[2] = (USHORT)output_sample->size - 4;
         }
+
+        return true;
     }
 
-    return true;
+    return false;
 }
