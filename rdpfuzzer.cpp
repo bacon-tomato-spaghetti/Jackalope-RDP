@@ -297,6 +297,24 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         }
     }
 
+    else if (!strcmp(this->channel, "PNPDR"))
+    {
+        // Size
+        if (output_sample->size >= 4)
+        {
+            PUINT Size = (PUINT)&output_sample->bytes[0];
+            *Size = output_sample->size;
+        }
+
+        // PacketId (0x65 ~ 0x68)
+        if (output_sample->size >= 8)
+        {
+            PUINT PacketId = (PUINT)&output_sample->bytes[4];
+            *PacketId %= 4;
+            *PacketId += 0x65;
+        }
+    }
+
     else if (!strcmp(this->channel, "CLIPRDR"))
     {
         // msgType
