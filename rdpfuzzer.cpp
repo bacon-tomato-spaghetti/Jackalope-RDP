@@ -287,8 +287,29 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
 
         // msgType
         PUCHAR msgType = (PUCHAR)&output_sample->bytes[0];
-        *msgType %= 0xd;
-        *msgType += 1;
+        switch (*msgType % 6)
+        {
+        case 0:
+            *msgType = 1;
+            break;
+        case 1:
+            *msgType = 2;
+            break;
+        case 2:
+            *msgType = 3;
+            break;
+        case 3:
+            *msgType = 6;
+            break;
+        case 4:
+            *msgType = 7;
+            break;
+        case 5:
+            *msgType = 13;
+            break;
+        default:
+            break;
+        }
 
         // bodySize
         if (output_sample->size >= 4)
