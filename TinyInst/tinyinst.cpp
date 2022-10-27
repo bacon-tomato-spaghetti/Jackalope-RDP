@@ -832,7 +832,7 @@ void TinyInst::OnCrashed(Exception *exception_record)
     char procdump_cmdline[0x100];
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);
-    snprintf(procdump_cmdline, 0x100, "procdump64.exe %d -ma -accepteula C:\\Fuzz\\Dump\\crash_%d", GetProcessId(), crash_idx);
+    snprintf(procdump_cmdline, 0x100, "procdump.exe %d -ma -accepteula out\\crashes\\crash_%d", GetProcessId(), crash_idx);
     ZeroMemory(&pi, sizeof(pi));
     DWORD pid = GetProcessId();
     if (CreateProcessA(NULL, (LPSTR)procdump_cmdline, NULL, NULL, false, 0, NULL, NULL, &si, &pi))
