@@ -1900,6 +1900,9 @@ void Debugger::StartProcess(char *cmd)
     child_handle = pi.hProcess;
     child_thread_handle = pi.hThread;
     child_entrypoint_reached = false;
+
+    process_id = pi.dwProcessId; // modification for RDP fuzzing
+
     target_reached = false;
     have_thread_context = false;
 

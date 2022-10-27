@@ -72,6 +72,9 @@ enum InstructionResult
 class TinyInst : public Debugger
 {
 public:
+
+    int crash_idx; // modification for RDP fuzzing
+
     virtual void Init(int argc, char **argv) override;
 
     void EnableInstrumentation()

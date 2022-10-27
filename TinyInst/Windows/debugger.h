@@ -81,6 +81,12 @@ public:
         return last_exception;
     }
 
+    // modification for RDP fuzzing
+    DWORD GetProcessId()
+    {
+        return process_id;
+    }
+
 protected:
     enum MemoryProtection
     {
@@ -228,6 +234,8 @@ private:
                          Exception *exception);
 
     Exception last_exception;
+
+    DWORD process_id; // modification for RDP fuzzing
 
     // thread id of the last event
     DWORD thread_id;
