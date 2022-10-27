@@ -299,5 +299,49 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         return true;
     }
 
+    if (!strcmp(this->channel, "RDPDR"))
+    {
+        if (original_sample->size < 4)
+        {
+            return false;
+        }
+
+        *output_sample = *original_sample;
+
+        // Component, PacketId
+        PUSHORT Component = (PUSHORT)&output_sample->bytes[0];
+        PUSHORT PacketId = (PUSHORT)&output_sample->bytes[2];
+        if (*PacketId < 0x2aaa)
+        {
+            *Component = 0x4472; // RDPDR_CTYP_CORE
+            *PacketId = 0x496e; // PAKID_CORE_SERVER_ANNOUNCE
+        }
+        else if (*PacketId < 0x2aaa * 2)
+        {
+            *Component = 0x4472; // RDPDR_CTYP_CORE
+            *PacketId = 0x6472; // PAKID_CORE_DEVICE_REPLY
+        }
+        else if (*PacketId < 0x2aaa * 3)
+        {
+            *Component = 0x4472; // RDPDR_CTYP_CORE
+            *PacketId = 0x4952; // PAKID_CORE_DEVICE_IOREQUEST
+        }
+        else if (*PacketId < 0x2aaa * 4)
+        {
+            *Component = 0x4472; // RDPDR_CTYP_CORE
+            *PacketId = 0x5350; // PAKID_CORE_SERVER_CAPABILITY
+        }
+        else if (*PacketId < 0x2aaa * 5)
+        {
+            *Component = 0x4472; // RDPDR_CTYP_CORE
+            *PacketId = 0x554c; // PAKID_CORE_USER_LOGGEDON
+        }
+        else
+        {
+            *Component = 0x5052; // RDPDR_CTYP_PRN
+            *PacketId = 0x5543; // PAKID_PRN_USING_XPS
+        }
+    }
+
     return false;
 }
