@@ -341,6 +341,8 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
             *Component = 0x5052; // RDPDR_CTYP_PRN
             *PacketId = 0x5543; // PAKID_PRN_USING_XPS
         }
+
+        return true;
     }
 
     return false;
