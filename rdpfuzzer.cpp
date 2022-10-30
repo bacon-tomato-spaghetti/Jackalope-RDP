@@ -332,7 +332,7 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         // Component, PacketId
         PUSHORT Component = (PUSHORT)&output_sample->bytes[0];
         PUSHORT PacketId = (PUSHORT)&output_sample->bytes[2];
-        switch (*PacketId % 6)
+        switch (*PacketId % 9)
         {
         case 0:
             *Component = 0x4472; // RDPDR_CTYP_CORE
