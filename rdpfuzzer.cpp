@@ -332,35 +332,34 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         // Component, PacketId
         PUSHORT Component = (PUSHORT)&output_sample->bytes[0];
         PUSHORT PacketId = (PUSHORT)&output_sample->bytes[2];
-        if (*PacketId < 0x2aaa)
+        switch (*PacketId % 6)
         {
+        case 0:
             *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x496e; // PAKID_CORE_SERVER_ANNOUNCE
-        }
-        else if (*PacketId < 0x2aaa * 2)
-        {
+            *PacketId = 0x496e;  // PAKID_CORE_SERVER_ANNOUNCE
+            break;
+        case 1:
             *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x6472; // PAKID_CORE_DEVICE_REPLY
-        }
-        else if (*PacketId < 0x2aaa * 3)
-        {
+            *PacketId = 0x6472;  // PAKID_CORE_DEVICE_REPLY
+            break;
+        case 2:
             *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x4952; // PAKID_CORE_DEVICE_IOREQUEST
-        }
-        else if (*PacketId < 0x2aaa * 4)
-        {
+            *PacketId = 0x4952;  // PAKID_CORE_DEVICE_IOREQUEST
+            break;
+        case 3:
             *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x5350; // PAKID_CORE_SERVER_CAPABILITY
-        }
-        else if (*PacketId < 0x2aaa * 5)
-        {
+            *PacketId = 0x5350;  // PAKID_CORE_SERVER_CAPABILITY
+            break;
+        case 4:
             *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x554c; // PAKID_CORE_USER_LOGGEDON
-        }
-        else
-        {
+            *PacketId = 0x554c;  // PAKID_CORE_USER_LOGGEDON
+            break;
+        case 5:
             *Component = 0x5052; // RDPDR_CTYP_PRN
-            *PacketId = 0x5543; // PAKID_PRN_USING_XPS
+            *PacketId = 0x5543;  // PAKID_PRN_USING_XPS
+            break;
+        default:
+            break;
         }
 
         return true;
