@@ -352,9 +352,13 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
             break;
         case 4:
             *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x554c;  // PAKID_CORE_USER_LOGGEDON
+            *PacketId = 0x5043;  // PAKID_PRN_CACHE_DATA
             break;
         case 5:
+            *Component = 0x4472; // RDPDR_CTYP_CORE
+            *PacketId = 0x554c;  // PAKID_CORE_USER_LOGGEDON
+            break;
+        case 6:
             *Component = 0x5052; // RDPDR_CTYP_PRN
             *PacketId = 0x5543;  // PAKID_PRN_USING_XPS
             break;
