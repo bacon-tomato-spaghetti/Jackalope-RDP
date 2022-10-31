@@ -830,17 +830,10 @@ void TinyInst::OnCrashed(Exception *exception_record)
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
     char procdump_cmdline[0x100];
+
     ZeroMemory(&si, sizeof(si));
     si.cb = sizeof(si);
-    snprintf(procdump_cmdline, 0x100, "procdump.exe %d -ma -accepteula out\\crashes\\crash_%d", GetProcessId(), crash_idx);
-    ZeroMemory(&pi, sizeof(pi));
-    DWORD pid = GetProcessId();
-    if (CreateProcessA(NULL, (LPSTR)procdump_cmdline, NULL, NULL, false, 0, NULL, NULL, &si, &pi))
-    {
-        WaitForSingleObject(pi.hProcess, INFINITE);
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
-    }
+
     this->crash_idx++;
 
     // clear known entries on crash
@@ -895,6 +888,16 @@ void TinyInst::OnCrashed(Exception *exception_record)
         printf("%02x ", (unsigned char)(module->instrumented_code_local[i]));
     }
     printf("\n");
+
+    snprintf(procdump_cmdline, 0x100, "procdump.exe %d -ma -accepteula out\\crashes\\crash_%d", GetProcessId(), crash_idx);
+    ZeroMemory(&pi, sizeof(pi));
+    DWORD pid = GetProcessId();
+    if (CreateProcessA(NULL, (LPSTR)procdump_cmdline, NULL, NULL, false, 0, NULL, NULL, &si, &pi))
+    {
+        WaitForSingleObject(pi.hProcess, INFINITE);
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+    }
 }
 
 // gets the address in the instrumented code corresponding to
