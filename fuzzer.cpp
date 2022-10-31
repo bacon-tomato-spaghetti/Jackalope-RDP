@@ -259,12 +259,15 @@ void Fuzzer::Run(int argc, char **argv)
 
 RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Coverage *coverage, uint32_t init_timeout, uint32_t timeout)
 {
+    // already filtered before
     // from this point on, the sample could be filtered
+    /*
     Sample filteredSample;
     if (OutputFilter(sample, &filteredSample, tc))
     {
         sample = &filteredSample;
     }
+    */
 
     // not protected by a mutex but not important to be perfectly accurate
     total_execs++;
@@ -494,6 +497,13 @@ RunResult Fuzzer::RunSample(ThreadContext *tc, Sample *sample, int *has_new_cove
     }
 
     Coverage initialCoverage;
+
+    // modification for RDP fuzzing
+    Sample filteredSample;
+    if (OutputFilter(sample, &filteredSample, tc))
+    {
+        sample = &filteredSample;
+    }
 
     RunResult result = RunSampleAndGetCoverage(tc, sample, &initialCoverage, init_timeout, timeout);
 
