@@ -129,6 +129,7 @@ void Fuzzer::ParseOptions(int argc, char **argv)
     track_ranges = GetBinaryOption("-track_ranges", argc, argv, false);
 
     Sample::max_size = (size_t)GetIntOption("-max_sample_size", argc, argv, DEFAULT_MAX_SAMPLE_SIZE);
+    Sample::min_size = (size_t)GetIntOption("-min_sample_size", argc, argv, DEFAULT_MIN_SAMPLE_SIZE);
 
     dry_run = GetBinaryOption("-dry_run", argc, argv, false);
 
@@ -895,7 +896,7 @@ void Fuzzer::FuzzJob(ThreadContext *tc, FuzzerJob *job)
         Sample mutated_sample = *entry->sample;
         if (!tc->mutator->Mutate(&mutated_sample, tc->prng, tc->all_samples_local))
             break;
-        if (mutated_sample.size > Sample::max_size)
+        if (mutated_sample.size > Sample::max_size || mutated_sample.size < Sample::min_size) // modification for RDP fuzzing
         {
             continue;
         }

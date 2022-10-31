@@ -23,6 +23,7 @@ limitations under the License.
 #include "mutex.h"
 
 #define DEFAULT_MAX_SAMPLE_SIZE 1000000
+#define DEFAULT_MIN_SAMPLE_SIZE 4 // modification for RDP fuzzing
 
 class Sample
 {
@@ -64,6 +65,7 @@ public:
     size_t FindFirstDiff(Sample &other);
 
     static size_t max_size;
+    static size_t min_size; // modification for RDP fuzzing
 };
 
 // a Trie-like structure whose purpose is to be able to
