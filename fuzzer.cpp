@@ -129,7 +129,7 @@ void Fuzzer::ParseOptions(int argc, char **argv)
     track_ranges = GetBinaryOption("-track_ranges", argc, argv, false);
 
     Sample::max_size = (size_t)GetIntOption("-max_sample_size", argc, argv, DEFAULT_MAX_SAMPLE_SIZE);
-    Sample::min_size = (size_t)GetIntOption("-min_sample_size", argc, argv, DEFAULT_MIN_SAMPLE_SIZE);
+    Sample::min_size = (size_t)GetIntOption("-min_sample_size", argc, argv, DEFAULT_MIN_SAMPLE_SIZE); // modification for RDP fuzzing
 
     dry_run = GetBinaryOption("-dry_run", argc, argv, false);
 

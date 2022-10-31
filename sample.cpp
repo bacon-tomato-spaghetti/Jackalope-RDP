@@ -24,6 +24,7 @@ limitations under the License.
 #include "mutex.h"
 
 size_t Sample::max_size = DEFAULT_MAX_SAMPLE_SIZE;
+size_t Sample::min_size = DEFAULT_MIN_SAMPLE_SIZE; // modification for RDP fuzzing
 
 Sample::Sample() {
   size = 0;
