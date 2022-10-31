@@ -600,8 +600,9 @@ void TinyInst::TranslateBasicBlock(char *address,
                                         GetCurrentInstrumentedAddress(module));
 
     // modification for RDP fuzzing
-    printf("Instrumenting bb, original at %p, instrumented at %p\n",
-           address, module->instrumented_code_remote + translated_offset);
+    FILE *instFile = fopen("out\\instrumentation.txt", "a");
+    fprintf(instFile, "Instrumenting bb, original at %p, instrumented at %p\n", address, module->instrumented_code_remote + translated_offset);
+    fclose(instFile);
 
     module->basic_blocks.insert({original_offset, translated_offset});
 
