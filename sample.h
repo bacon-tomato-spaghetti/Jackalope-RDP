@@ -24,73 +24,76 @@ limitations under the License.
 
 #define DEFAULT_MAX_SAMPLE_SIZE 1000000
 
-class Sample {
+class Sample
+{
 public:
-  char *bytes;
-  size_t size;
-  std::string filename;
+    char *bytes;
+    size_t size;
+    std::string filename;
 
-  Sample();
-  ~Sample();
-  Sample(const Sample &in);
-  Sample& operator= (const Sample &in);
+    Sample();
+    ~Sample();
+    Sample(const Sample &in);
+    Sample &operator=(const Sample &in);
 
-  void Clear();
+    void Clear();
 
-  int Save(const char * filename);
+    int Save(const char *filename);
 
-  int Save();
-  int Load();
+    int Save();
+    int Load();
 
-  void FreeMemory();
-  void EnsureLoaded();
+    void FreeMemory();
+    void EnsureLoaded();
 
-  void Save(FILE * fp);
+    void Save(FILE *fp);
 
-  int Load(const char * filename);
+    int Load(const char *filename);
 
-  void Init(const char *data, size_t size);
-  void Init(size_t size);
+    void Init(const char *data, size_t size);
+    void Init(size_t size);
 
-  void Append(char *data, size_t size);
+    void Append(char *data, size_t size);
 
-  void Trim(size_t new_size);
-  
-  void Resize(size_t new_size);
-  
-  void Crop(size_t from, size_t to, Sample* out);
+    void Trim(size_t new_size);
 
-  size_t FindFirstDiff(Sample &other);
+    void Resize(size_t new_size);
 
-  static size_t max_size;
+    void Crop(size_t from, size_t to, Sample *out);
+
+    size_t FindFirstDiff(Sample &other);
+
+    static size_t max_size;
 };
 
 // a Trie-like structure whose purpose is to be able to
 // quickly identify the first byte of a sample
 // that differs from the samples seen so far
-class SampleTrie {
+class SampleTrie
+{
 public:
-  SampleTrie() {
-    root = NULL;
-  }
-  
-  size_t AddSample(Sample *sample);
+    SampleTrie()
+    {
+        root = NULL;
+    }
+
+    size_t AddSample(Sample *sample);
 
 protected:
-  struct SampleTrieNode {
-    SampleTrieNode();
-    ~SampleTrieNode();
-    
-    void InitConstantPart(Sample *sample, size_t from, size_t to);
+    struct SampleTrieNode
+    {
+        SampleTrieNode();
+        ~SampleTrieNode();
 
-    char *constant_part;
-    size_t constant_part_size;
+        void InitConstantPart(Sample *sample, size_t from, size_t to);
 
-    std::unordered_map<unsigned char, SampleTrieNode*> children;
-    bool leaf;
-  };
-  
-  static Mutex sample_trie_mutex;
-  SampleTrieNode *root;
+        char *constant_part;
+        size_t constant_part_size;
+
+        std::unordered_map<unsigned char, SampleTrieNode *> children;
+        bool leaf;
+    };
+
+    static Mutex sample_trie_mutex;
+    SampleTrieNode *root;
 };
-
