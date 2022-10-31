@@ -599,8 +599,9 @@ void TinyInst::TranslateBasicBlock(char *address,
                                         (size_t)address,
                                         GetCurrentInstrumentedAddress(module));
 
-    // printf("Instrumenting bb, original at %p, instrumented at %p\n",
-    //        address, module->instrumented_code_remote + translated_offset);
+    // modification for RDP fuzzing
+    printf("Instrumenting bb, original at %p, instrumented at %p\n",
+           address, module->instrumented_code_remote + translated_offset);
 
     module->basic_blocks.insert({original_offset, translated_offset});
 
