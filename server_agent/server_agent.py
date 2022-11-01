@@ -4,7 +4,7 @@ from wtsapi import *
 
 HOST = '127.0.0.2'
 PORT = 12345
-SIZE = 9999  # maximum buffer size
+SIZE = 1600  # maximum buffer size
 
 VCHandleValid = False  # check if virtual channel handle is valid
 
@@ -34,6 +34,7 @@ while True:
 
     for i in range(30):
         if VirtualChannelWrite(RDPSND, data):
+            VirtualChannelClose(RDPSND)
             break
         else:
             if i == 29:
@@ -42,20 +43,3 @@ while True:
                 time.sleep(1)
     if not VCHandleValid:
         continue
-
-    while True:
-        data = client_socket.recv(SIZE)
-        dataSize = len(data)
-        print(f'[+] {dataSize}bytes received')
-        hexdump(data, len(data))
-
-        for i in range(30):
-            if VirtualChannelWrite(RDPSND, data):
-                break
-            else:
-                if i == 29:
-                    VCHandleValid = False
-                else:
-                    time.sleep(1)
-        if not VCHandleValid:
-            break
