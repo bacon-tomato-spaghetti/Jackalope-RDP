@@ -395,6 +395,7 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
             sample->Save(outfile.c_str());
         }
         num_hangs++;
+        dynamic_cast<TinyInstInstrumentation *>(tc->instrumentation)->ClearList();
         output_mutex.Unlock();
     }
 
