@@ -335,46 +335,49 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         // Component, PacketId
         PUSHORT Component = (PUSHORT)&output_sample->bytes[0];
         PUSHORT PacketId = (PUSHORT)&output_sample->bytes[2];
-        switch (*PacketId % 9)
+        if (*PacketId != 0x4343 && *PacketId != 0x4452 && *PacketId != 0x4952 && *PacketId != 0x496e && *PacketId != 0x5350 && *PacketId != 0x554c && *PacketId != 0x6472 && *PacketId != 0x5043 && *PacketId != 0x5543)
         {
-        case 0:
-            *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x4343;  // PAKID_CORE_CLIENTID_CONFIRM
-            break;
-        case 1:
-            *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x4452;  // Not in MS specification
-            break;
-        case 2:
-            *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x4952;  // PAKID_CORE_DEVICE_IOREQUEST
-            break;
-        case 3:
-            *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x496e;  // PAKID_CORE_SERVER_ANNOUNCE
-            break;
-        case 4:
-            *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x5350;  // PAKID_CORE_SERVER_CAPABILITY
-            break;
-        case 5:
-            *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x554c;  // PAKID_CORE_USER_LOGGEDON
-            break;
-        case 6:
-            *Component = 0x4472; // RDPDR_CTYP_CORE
-            *PacketId = 0x6472;  // PAKID_CORE_DEVICE_REPLY
-            break;
-        case 7:
-            *Component = 0x5052; // RDPDR_CTYP_PRN
-            *PacketId = 0x5043;  // PAKID_PRN_CACHE_DATA
-            break;
-        case 8:
-            *Component = 0x5052; // RDPDR_CTYP_PRN
-            *PacketId = 0x5543;  // PAKID_PRN_USING_XPS
-            break;
-        default:
-            break;
+            switch (*PacketId % 9)
+            {
+            case 0:
+                *Component = 0x4472; // RDPDR_CTYP_CORE
+                *PacketId = 0x4343;  // PAKID_CORE_CLIENTID_CONFIRM
+                break;
+            case 1:
+                *Component = 0x4472; // RDPDR_CTYP_CORE
+                *PacketId = 0x4452;  // Not in MS specification
+                break;
+            case 2:
+                *Component = 0x4472; // RDPDR_CTYP_CORE
+                *PacketId = 0x4952;  // PAKID_CORE_DEVICE_IOREQUEST
+                break;
+            case 3:
+                *Component = 0x4472; // RDPDR_CTYP_CORE
+                *PacketId = 0x496e;  // PAKID_CORE_SERVER_ANNOUNCE
+                break;
+            case 4:
+                *Component = 0x4472; // RDPDR_CTYP_CORE
+                *PacketId = 0x5350;  // PAKID_CORE_SERVER_CAPABILITY
+                break;
+            case 5:
+                *Component = 0x4472; // RDPDR_CTYP_CORE
+                *PacketId = 0x554c;  // PAKID_CORE_USER_LOGGEDON
+                break;
+            case 6:
+                *Component = 0x4472; // RDPDR_CTYP_CORE
+                *PacketId = 0x6472;  // PAKID_CORE_DEVICE_REPLY
+                break;
+            case 7:
+                *Component = 0x5052; // RDPDR_CTYP_PRN
+                *PacketId = 0x5043;  // PAKID_PRN_CACHE_DATA
+                break;
+            case 8:
+                *Component = 0x5052; // RDPDR_CTYP_PRN
+                *PacketId = 0x5543;  // PAKID_PRN_USING_XPS
+                break;
+            default:
+                break;
+            }
         }
 
         return true;
