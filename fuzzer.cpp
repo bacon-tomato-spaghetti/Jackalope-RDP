@@ -310,7 +310,6 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
     {
         string crash_desc = tc->instrumentation->GetCrashName();
 
-        /*
         if (crash_reproduce_retries > 0)
         {
             if (TryReproduceCrash(tc, sample, init_timeout, timeout) == CRASH)
@@ -323,7 +322,6 @@ RunResult Fuzzer::RunSampleAndGetCoverage(ThreadContext *tc, Sample *sample, Cov
                 crash_desc = "flaky_" + crash_desc;
             }
         }
-        */
 
         bool should_save_crash = false;
         int duplicates = 0;
