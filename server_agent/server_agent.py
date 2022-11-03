@@ -33,13 +33,5 @@ while True:
         print(f'[+] {dataSize}bytes received')
         hexdump(data, len(data))
         
-        for i in range(30):
-            if VirtualChannelWrite(RDPSND, data):
-                break
-            else:
-                if i == 29:
-                    VCHandleValid = False
-                else:
-                    time.sleep(1)
-        if not VCHandleValid:
+        if not VirtualChannelWrite(RDPSND, data):
             break
