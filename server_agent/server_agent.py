@@ -17,11 +17,6 @@ client_socket, client_addr = server_socket.accept()
 print(f'[+] Client addr: {client_addr}')
 
 while True:
-    data = client_socket.recv(SIZE)
-    dataSize = len(data)
-    print(f'[+] {dataSize}bytes received')
-    hexdump(data, len(data))
-
     RDPServer = OpenServer(b'localhost')
 
     while True:
@@ -32,14 +27,19 @@ while True:
         else:
             time.sleep(1)
 
-    for i in range(30):
-        if VirtualChannelWrite(RDPSND, data):
-            VirtualChannelClose(RDPSND)
-            break
-        else:
-            if i == 29:
-                VCHandleValid = False
+    while True:
+        data = client_socket.recv(SIZE)
+        dataSize = len(data)
+        print(f'[+] {dataSize}bytes received')
+        hexdump(data, len(data))
+        
+        for i in range(30):
+            if VirtualChannelWrite(RDPSND, data):
+                break
             else:
-                time.sleep(1)
-    if not VCHandleValid:
-        continue
+                if i == 29:
+                    VCHandleValid = False
+                else:
+                    time.sleep(1)
+        if not VCHandleValid:
+            break
