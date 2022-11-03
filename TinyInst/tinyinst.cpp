@@ -846,11 +846,13 @@ void TinyInst::OnCrashed(Exception *exception_record)
 
     char *address = (char *)exception_record->ip;
 
-    printf("Exception at address %p\n", static_cast<void *>(address));
+    FILE *exceptionLog = fopen("out\\exception.txt", "a"); // modification for RDP fuzzing
+
+    fprintf(exceptionLog, "Exception at address %p\n", static_cast<void *>(address));
     if (exception_record->type == ACCESS_VIOLATION)
     {
         // printf("Access type: %d\n", (int)exception_record->ExceptionInformation[0]);
-        printf("Access address: %p\n", exception_record->access_address);
+        fprintf(exceptionLog, "Access address: %p\n", exception_record->access_address);
     }
 
     snprintf(procdump_cmdline, 0x100, "procdump.exe %d -ma -accepteula out\\crashes\\crash_%d", GetProcessId(), crash_idx);
@@ -867,7 +869,7 @@ void TinyInst::OnCrashed(Exception *exception_record)
     if (!module)
         return;
 
-    printf("Exception in instrumented module %s %p\n", module->module_name.c_str(), module->module_header);
+    fprintf(exceptionLog, "Exception in instrumented module %s %p\n", module->module_name.c_str(), module->module_header);
     size_t offset = (size_t)address - (size_t)module->instrumented_code_remote;
 
     if (full_address_map && !module->address_map.empty())
@@ -876,11 +878,11 @@ void TinyInst::OnCrashed(Exception *exception_record)
         if (iter != module->address_map.begin())
         {
             --iter;
-            printf("Original exception address (could be incorrect): %p\n", (void *)iter->second);
+            fprintf(exceptionLog, "Original exception address (could be incorrect): %p\n", (void *)iter->second);
         }
     }
 
-    printf("Code before:\n");
+    fprintf(exceptionLog, "Code before:\n");
     size_t offset_from;
     if (offset < 10)
         offset_from = 0;
@@ -888,18 +890,18 @@ void TinyInst::OnCrashed(Exception *exception_record)
         offset_from = offset - 10;
     for (size_t i = offset_from; i < offset; i++)
     {
-        printf("%02x ", (unsigned char)(module->instrumented_code_local[i]));
+        fprintf(exceptionLog, "%02x ", (unsigned char)(module->instrumented_code_local[i]));
     }
-    printf("\n");
-    printf("Code after:\n");
+    fprintf(exceptionLog, "\n");
+    fprintf(exceptionLog, "Code after:\n");
     size_t offset_to = offset + 0x10;
     if (offset_to > module->instrumented_code_size)
         offset_to = module->instrumented_code_size;
     for (size_t i = offset; i < offset_to; i++)
     {
-        printf("%02x ", (unsigned char)(module->instrumented_code_local[i]));
+        fprintf(exceptionLog, "%02x ", (unsigned char)(module->instrumented_code_local[i]));
     }
-    printf("\n");
+    fprintf(exceptionLog, "\n");
 }
 
 // gets the address in the instrumented code corresponding to
