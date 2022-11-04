@@ -335,6 +335,10 @@ bool RDPFuzzer::OutputFilter(Sample *original_sample, Sample *output_sample, Thr
         // Component, PacketId
         PUSHORT Component = (PUSHORT)&output_sample->bytes[0];
         PUSHORT PacketId = (PUSHORT)&output_sample->bytes[2];
+        if (*Component == 0x4472 || *Component == 0x5052)
+        {
+            return false;
+        }
         if (*PacketId != 0x4343 && *PacketId != 0x4452 && *PacketId != 0x4952 && *PacketId != 0x496e && *PacketId != 0x5350 && *PacketId != 0x554c && *PacketId != 0x6472 && *PacketId != 0x5043 && *PacketId != 0x5543)
         {
             switch (*PacketId % 9)
