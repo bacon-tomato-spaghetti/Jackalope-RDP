@@ -37,16 +37,18 @@ Use `Release` instead of `Debug` to remove debugging symbols.
 
 ### Command
 
+Before fuzzing, You should save RDP connection files(`RDPserver1.rdp`, `RDPserver2.rdp`, ...) in same folder with fuzzer. `mstsc` command line will be `mstsc RDPserver@@.rdp`.
+
 Execute in Command Prompt.
 
 ```powershell
-fuzzer.exe -in <input directory> -out <output directory> -rdpconf <RDP config file> -channel <virtual channel to run fuzzing on> -nthreads <number of threads> -clean_target_on_coverage false -persist <Jackalope options> -- mstsc <mstsc options except /v>
+fuzzer.exe -in <input directory> -out <output directory> -rdpconf <RDP config file> -channel <virtual channel to run fuzzing on> -nthreads <number of threads> -clean_target_on_coverage false -persist <Jackalope options> -- mstsc
 ```
 
 For example,
 
 ```powershell
-fuzzer.exe -in in -out out -rdpconf rdp.conf -channel RDPSND -nthreads 3 -target_offset 0x484800 -t 20000 -instrument_module mstscax.dll -target_module mstscax.dll -clean_target_on_coverage false -persist -iterations 10000 -cmp_coverage -dump_coverage -keep_samples_in_memory false -server 192.168.0.2:54321 -- mstsc /w:1000 /h:800
+fuzzer.exe -in in -out out -rdpconf rdp.conf -channel RDPSND -nthreads 3 -target_offset 0x484800 -t 20000 -instrument_module mstscax.dll -target_module mstscax.dll -clean_target_on_coverage false -persist -iterations 10000 -cmp_coverage -dump_coverage -keep_samples_in_memory false -server 192.168.0.2:54321 -- mstsc
 ```
 
 - Options

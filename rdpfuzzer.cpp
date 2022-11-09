@@ -34,10 +34,13 @@ RDPFuzzer::RDPThreadContext *RDPFuzzer::CreateRDPThreadContext(int argc, char **
         tc->target_argv[i] = target_argv[i];
     }
     tc->target_argv[tc->target_argc - 1] = (char *)calloc(strlen(tc->host) + 4, sizeof(char));
+    /*
     tc->target_argv[tc->target_argc - 1][0] = '/';
     tc->target_argv[tc->target_argc - 1][1] = 'v';
     tc->target_argv[tc->target_argc - 1][2] = ':';
     strcpy(&tc->target_argv[tc->target_argc - 1][3], tc->host);
+    */
+    sprintf(tc->target_argv[tc->target_argc - 1], "RDPserver%d", thread_id);
 
     tc->thread_id = thread_id;
     tc->fuzzer = this;
