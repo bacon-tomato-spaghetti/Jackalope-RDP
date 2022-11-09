@@ -40,7 +40,7 @@ RDPFuzzer::RDPThreadContext *RDPFuzzer::CreateRDPThreadContext(int argc, char **
     tc->target_argv[tc->target_argc - 1][2] = ':';
     strcpy(&tc->target_argv[tc->target_argc - 1][3], tc->host);
     */
-    sprintf(tc->target_argv[tc->target_argc - 1], "RDPserver%d", thread_id);
+    sprintf(tc->target_argv[tc->target_argc - 1], "RDPserver%d.rdp", thread_id);
 
     tc->thread_id = thread_id;
     tc->fuzzer = this;
